@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CashTime — App Screens</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0D0B14;
+    --surface:   #15112A;
+    --card:      #1C1735;
+    --border:    rgba(138,99,255,0.18);
+    --purple:    #7C3AED;
+    --violet:    #9F67FF;
+    --glow:      #A78BFA;
+    --accent:    #C4B5FD;
+    --white:     #F5F3FF;
+    --muted:     #7E7A9A;
+    --success:   #34D399;
+    --warning:   #FBBF24;
+    --danger:    #F87171;
+    --r:         16px;
+    --r-sm:      10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #08060F;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--white);
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  /* ── LAYOUT ─────────────────────────────────── */
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--violet);
+    margin-bottom: 24px;
+    margin-top: 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  .screens-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    justify-content: center;
+  }
+
+  /* ── PHONE SHELL ─────────────────────────────── */
+  .phone {
+    width: 340px;
+    min-height: 680px;
+    background: var(--bg);
+    border-radius: 44px;
+    border: 1.5px solid rgba(138,99,255,0.3);
+    box-shadow:
+      0 0 0 6px rgba(10,8,20,0.9),
+      0 0 60px rgba(124,58,237,0.15),
+      0 32px 80px rgba(0,0,0,0.7);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .phone-notch {
+    width: 100%;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    flex-shrink: 0;
+  }
+  .phone-notch .time { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; }
+  .phone-notch .icons { display: flex; gap: 6px; align-items: center; }
+  .phone-notch .icons span { font-size: 12px; opacity: .8; }
+
+  .phone-screen {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 0 20px;
+    scrollbar-width: none;
+  }
+  .phone-screen::-webkit-scrollbar { display: none; }
+
+  /* ── STATUS BAR ─────────────────────────────── */
+  .screen-header {
+    padding: 16px 22px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .screen-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .screen-subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* ── BOTTOM NAV ──────────────────────────────── */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 68px;
+    background: rgba(15,11,26,0.96);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 12px;
+    z-index: 10;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    opacity: .45;
+    transition: opacity .2s;
+  }
+  .nav-item.active { opacity: 1; }
+  .nav-item svg { width: 22px; height: 22px; }
+  .nav-item span { font-size: 10px; font-weight: 500; letter-spacing: .02em; color: var(--white); }
+  .nav-item.active span { color: var(--violet); }
+  .nav-item.active svg path, .nav-item.active svg circle { stroke: var(--violet); }
+
+  .nav-add {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, var(--purple), var(--violet));
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 24px rgba(124,58,237,0.5);
+    opacity: 1 !important;
+    flex-shrink: 0;
+  }
+  .nav-add svg { width: 24px; height: 24px; }
+
+  /* ── COMPONENTS ──────────────────────────────── */
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 11px; font-weight: 500;
+    background: rgba(124,58,237,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(124,58,237,0.25);
+  }
+  .pill.green  { background: rgba(52,211,153,0.12); color: #6EE7B7; border-color: rgba(52,211,153,0.25); }
+  .pill.yellow { background: rgba(251,191,36,0.12);  color: #FCD34D; border-color: rgba(251,191,36,0.25); }
+  .pill.red    { background: rgba(248,113,113,0.12); color: #FCA5A5; border-color: rgba(248,113,113,0.25); }
+  .pill.gray   { background: rgba(126,122,154,0.15); color: var(--muted); border-color: rgba(126,122,154,0.2); }
+
+  .card {
+    margin: 0 16px 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card.highlight {
+    border-color: rgba(138,99,255,0.45);
+    background: linear-gradient(135deg, rgba(124,58,237,0.12), var(--card));
+  }
+  .card.highlight::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--violet), transparent);
+  }
+
+  .card-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; color: var(--white); line-height: 1.3; }
+  .card-meta { font-size: 12px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .card-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--violet);
+    white-space: nowrap;
+  }
+  .card-price span { font-size: 11px; color: var(--muted); display: block; text-align: right; font-family: 'DM Sans', sans-serif; font-weight: 400; }
+
+  .avatar {
+    width: 34px; height: 34px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--r-sm);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    letter-spacing: .02em;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--purple), var(--violet));
+    color: white;
+    box-shadow: 0 6px 24px rgba(124,58,237,0.4);
+  }
+  .btn-secondary {
+    background: rgba(124,58,237,0.1);
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid rgba(126,122,154,0.2);
+  }
+
+  .input-group {
+    margin: 0 16px 12px;
+  }
+  .input-label { font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 6px; letter-spacing: .04em; text-transform: uppercase; }
+  .input-field {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 13px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--white);
+    outline: none;
+  }
+  .input-field.focused { border-color: var(--purple); background: rgba(124,58,237,0.07); }
+  .input-field.textarea { height: 80px; resize: none; line-height: 1.5; }
+
+  .divider { height: 1px; background: var(--border); margin: 12px 16px; }
+
+  .rank-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(251,191,36,0.05));
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 11px;
+    color: #FCD34D;
+    font-weight: 600;
+  }
+
+  .chat-bubble {
+    max-width: 72%;
+    padding: 10px 13px;
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .chat-bubble.out {
+    background: linear-gradient(135deg, var(--purple), #6025C7);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    margin-left: auto;
+  }
+  .chat-bubble.in {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--white);
+    border-bottom-left-radius: 4px;
+  }
+  .chat-time { font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+
+  .progress-bar {
+    height: 4px;
+    background: rgba(124,58,237,0.15);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--violet));
+    border-radius: 100px;
+  }
+
+  .photo-box {
+    background: var(--card);
+    border: 1.5px dashed rgba(124,58,237,0.35);
+    border-radius: var(--r);
+    padding: 28px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    margin: 0 16px 12px;
+  }
+  .photo-box svg { opacity: .5; }
+  .photo-box p { font-size: 13px; color: var(--muted); text-align: center; line-height: 1.4; }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; margin-bottom: 12px; }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 14px;
+  }
+  .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .stat-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--white); }
+  .stat-sub { font-size: 11px; color: var(--success); margin-top: 2px; }
+
+  .tag { display: inline-flex; align-items: center; padding: 3px 8px; background: rgba(124,58,237,0.12); color: var(--accent); border-radius: 6px; font-size: 11px; margin-right: 4px; margin-bottom: 4px; }
+
+  .plan-card {
+    margin: 0 16px 12px;
+    border-radius: var(--r);
+    padding: 18px;
+    position: relative; overflow: hidden;
+  }
+  .plan-card.free { background: var(--card); border: 1px solid var(--border); }
+  .plan-card.pro {
+    background: linear-gradient(135deg, #3B1B8A, #1C1735);
+    border: 1px solid rgba(167,139,250,0.4);
+    box-shadow: 0 0 40px rgba(124,58,237,0.2);
+  }
+  .plan-card.pro::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--glow));
+  }
+
+  .section-pad { padding: 12px 16px 4px; }
+  .section-sm { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
+
+  /* ── HEADER TITLE AREA ───────────────────────── */
+  .app-logo {
+    padding: 10px 22px 0;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--purple), var(--violet));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-text { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--white); }
+  .logo-text span { color: var(--violet); }
+
+  /* ── ONBOARDING ──────────────────────────────── */
+  .onboard-hero {
+    padding: 32px 22px 24px;
+    text-align: center;
+  }
+  .onboard-icon {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, rgba(124,58,237,0.25), rgba(159,103,255,0.15));
+    border: 1.5px solid rgba(138,99,255,0.35);
+    border-radius: 28px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 40px rgba(124,58,237,0.2);
+  }
+  .onboard-h { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+  .onboard-p { font-size: 14px; color: var(--muted); line-height: 1.55; }
+
+  .quiz-option {
+    margin: 0 16px 8px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+  .quiz-option.selected { border-color: var(--violet); background: rgba(124,58,237,0.08); }
+  .quiz-option-check {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .quiz-option.selected .quiz-option-check {
+    background: var(--purple);
+    border-color: var(--purple);
+  }
+  .quiz-option-text { font-size: 14px; color: var(--white); }
+
+  .map-placeholder {
+    margin: 0 16px 12px;
+    height: 120px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .map-placeholder::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 55% 45%, rgba(124,58,237,0.2) 0%, transparent 65%);
+  }
+
+  .notification-dot {
+    width: 8px; height: 8px;
+    background: var(--violet);
+    border-radius: 50%;
+    position: absolute;
+    top: -2px; right: -2px;
+    border: 1.5px solid var(--bg);
+  }
+
+  .page-title-area {
+    padding: 16px 22px 8px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .search-bar {
+    margin: 0 16px 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 11px 14px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .filter-chips {
+    display: flex; gap: 8px;
+    padding: 0 16px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+  }
+  .filter-chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 12px; font-weight: 500;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+  }
+  .chip.active {
+    background: rgba(124,58,237,0.15);
+    color: var(--accent);
+    border-color: rgba(124,58,237,0.4);
+  }
+
+  .chat-input-bar {
+    position: absolute; bottom: 68px; left: 0; right: 0;
+    padding: 10px 16px;
+    background: rgba(13,11,20,0.97);
+    border-top: 1px solid var(--border);
+    display: flex; gap: 8px; align-items: center;
+  }
+  .chat-input {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .chat-send {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--purple), var(--violet));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── HEADER LABEL ──────────────────────────────── */
+  .page-header-label { font-size: 11px; color: var(--muted); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TITLE
+══════════════════════════════════════════════════════════════ -->
+<div style="text-align:center; padding: 0 0 40px;">
+  <div style="display:inline-flex; align-items:center; gap:12px; margin-bottom:12px;">
+    <div style="width:42px;height:42px;background:linear-gradient(135deg,#7C3AED,#9F67FF);border-radius:14px;display:flex;align-items:center;justify-content:center;">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <span style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#F5F3FF;">Cash<span style="color:#9F67FF;">Time</span></span>
+  </div>
+  <p style="font-size:13px;color:#7E7A9A;letter-spacing:.05em;">MICRO-TAREFAS · RÁPIDAS · CONFIÁVEIS</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SEÇÃO 1 — ONBOARDING
+══════════════════════════════════════════════════════════════ -->
+<div class="section-label">01 — Onboarding &amp; Cadastro</div>
+<div class="screens-row">
+
+  <!-- SPLASH / BOAS-VINDAS -->
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen">
+      <div style="padding: 24px 22px 0; text-align:center;">
+        <div style="width:90px;height:90px;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(159,103,255,.15));border:1.5px solid rgba(138,99,255,.4);border-radius:30px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:0 0 60px rgba(124,58,237,.25);">
+          <svg width="44" height="44" fill="none" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1.1;margin-bottom:6px;">Cash<span style="color:#9F67FF;">Time</span></div>
+        <div style="font-size:13px;color:#7E7A9A;margin-bottom:32px;">Serviços rápidos.<br>Pagamento garantido.</div>
+      </div>
+
+      <!-- features -->
+      <div style="padding: 0 22px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div style="width:38px;height:38px;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#A78BFA" stroke-width="1.8"/><path d="M12 6v6l4 2" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#F5F3FF;">Até 2 horas por tarefa</div>
+            <div style="font-size:12px;color:#7E7A9A;">Micro-tarefas rápidas e objetivas</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div style="width:38px;height:38px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#34D399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#F5F3FF;">Pagamento seguro</div>
+            <div style="font-size:12px;color:#7E7A9A;">Receba só após concluir o serviço</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
+          <div style="width:38px;height:38px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="#FBBF24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#F5F3FF;">Sistema de ranking</div>
+            <div style="font-size:12px;color:#7E7A9A;">Mais tarefas = mais credibilidade</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:0 16px;display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-primary">Criar conta grátis</button>
+        <button class="btn btn-ghost">Já tenho conta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTIONÁRIO DE NICHO -->
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen">
+      <div style="padding: 16px 22px 8px; display:flex; align-items:center; gap:10px;">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#7E7A9A" stroke-width="2" stroke-linecap="round"/></svg>
+        <span style="font-size:12px;color:#7E7A9A;">Passo 2 de 3</span>
+      </div>
+      <div class="progress-bar" style="margin:0 16px 20px;">
+        <div class="progress-fill" style="width:66%"></div>
+      </div>
+
+      <div style="padding:0 22px 18px;">
+        <div style="font-family:'Syne',sans-serif;font-size:19px;font-weight:700;line-height:1.3;margin-bottom:6px;">Qual é o seu perfil?</div>
+        <div style="font-size:13px;color:#7E7A9A;line-height:1.5;">Isso nos ajuda a mostrar as tarefas certas para você.</div>
+      </div>
+
+      <div class="quiz-option selected">
+        <div class="quiz-option-check">
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="quiz-option-text" style="font-weight:500;">💻 Tecnologia & Design</div>
+          <div style="font-size:11px;color:#7E7A9A;margin-top:2px;">Dev, UI/UX, suporte técnico</div>
+        </div>
+      </div>
+      <div class="quiz-option">
+        <div class="quiz-option-check"></div>
+        <div>
+          <div class="quiz-option-text">📦 Entregas & Logística</div>
+          <div style="font-size:11px;color:#7E7A9A;margin-top:2px;">Moto, carro, entrega a pé</div>
+        </div>
+      </div>
+      <div class="quiz-option">
+        <div class="quiz-option-check"></div>
+        <div>
+          <div class="quiz-option-text">🏠 Serviços Domésticos</div>
+          <div style="font-size:11px;color:#7E7A9A;margin-top:2px;">Limpeza, montagem, reparos</div>
+        </div>
+      </div>
+      <div class="quiz-option">
+        <div class="quiz-option-check"></div>
+        <div>
+          <div class="quiz-option-text">📝 Administrativo & Pesquisa</div>
+          <div style="font-size:11px;color:#7E7A9A;margin-top:2px;">Formulários, atendimento, dados</div>
+        </div>
+      </div>
+      <div class="quiz-option">
+        <div class="quiz-option-check"></div>
+        <div>
+          <div class="quiz-option-text">🎨 Criativo & Marketing</div>
+          <div style="font-size:11px;color:#7E7A9A;margin-top:2px;">Foto, vídeo, copy, social media</div>
+        </div>
+      </div>
+
+      <div style="padding:16px 16px 80px;">
+        <button class="btn btn-primary">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SEÇÃO 2 — FEED DE TAREFAS
+══════════════════════════════════════════════════════════════ -->
+<div class="section-label">02 — Feed de Tarefas</div>
+<div class="screens-row">
+
+  <!-- FEED PRINCIPAL -->
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen" style="padding-bottom: 80px;">
+      <div class="app-logo" style="justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="logo-icon">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <span class="logo-text">Cash<span>Time</span></span>
+        </div>
+        <div style="position:relative;">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#7E7A9A" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <div class="notification-dot"></div>
+        </div>
+      </div>
+
+      <div style="padding:12px 22px 4px;">
+        <div style="font-size:12px;color:#7E7A9A;">Olá, <strong style="color:#C4B5FD;">Luiz</strong> 👋</div>
+        <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-top:2px;">Tarefas para você</div>
+      </div>
+
+      <div class="search-bar">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="#7E7A9A" stroke-width="1.8"/><path d="M21 21l-4.35-4.35" stroke="#7E7A9A" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Buscar tarefas...
+      </div>
+
+      <div class="filter-chips">
+        <div class="chip active">Todos</div>
+        <div class="chip">💻 Tech</div>
+        <div class="chip">📦 Entrega</div>
+        <div class="chip">🏠 Casa</div>
+        <div class="chip">📝 Admin</div>
+      </div>
+
+      <!-- CARD DESTAQUE (patrocinado) -->
+      <div class="card highlight">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div class="pill" style="font-size:10px;">⭐ Destaque</div>
+          <div class="pill green">💻 Tech</div>
+        </div>
+        <div class="card-row">
+          <div style="flex:1;">
+            <div class="card-title">Ajuda para configurar roteador wi-fi e resolver queda de sinal</div>
+            <div class="card-meta">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+              1.2 km · Apucarana
+            </div>
+            <div style="margin-top:8px;">
+              <span class="tag">Redes</span><span class="tag">Wi-Fi</span><span class="tag">Roteador</span>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+            <div class="card-price">R$65<span>até 1h</span></div>
+          </div>
+        </div>
+        <div class="divider" style="margin:12px 0;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="avatar" style="background:rgba(124,58,237,.2);color:#A78BFA;">MA</div>
+            <div>
+              <div style="font-size:12px;font-weight:500;">Marcos Alves</div>
+              <div class="rank-badge">🏆 Nível 4</div>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:auto;padding:9px 18px;font-size:12px;">Tenho interesse</button>
+        </div>
+      </div>
+
+      <!-- CARD NORMAL -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div class="pill gray">📦 Entrega</div>
+          <div style="font-size:11px;color:#7E7A9A;">há 12 min</div>
+        </div>
+        <div class="card-row">
+          <div style="flex:1;">
+            <div class="card-title">Buscar encomenda nos Correios e entregar em endereço próximo</div>
+            <div class="card-meta">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+              0.8 km · Centro
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+            <div class="card-price">R$30<span>~45 min</span></div>
+          </div>
+        </div>
+        <div class="divider" style="margin:10px 0;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="avatar" style="background:rgba(52,211,153,.12);color:#34D399;">CS</div>
+            <div>
+              <div style="font-size:12px;font-weight:500;">Carla Souza</div>
+              <div class="rank-badge" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:#C4B5FD;">🥈 Nível 2</div>
+            </div>
+          </div>
+          <button class="btn btn-secondary" style="width:auto;padding:9px 18px;font-size:12px;">Tenho interesse</button>
+        </div>
+      </div>
+
+      <!-- CARD NORMAL 2 -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div class="pill" style="background:rgba(251,191,36,.1);color:#FCD34D;border-color:rgba(251,191,36,.25);">🎨 Criativo</div>
+          <div style="font-size:11px;color:#7E7A9A;">há 1h</div>
+        </div>
+        <div class="card-row">
+          <div style="flex:1;">
+            <div class="card-title">Editar 3 fotos de produto para loja do Instagram</div>
+            <div class="card-meta">🌐 Remoto · sem localização</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+            <div class="card-price">R$50<span>~1h30</span></div>
+          </div>
+        </div>
+        <div class="divider" style="margin:10px 0;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="avatar" style="background:rgba(251,191,36,.12);color:#FCD34D;">RF</div>
+            <div>
+              <div style="font-size:12px;font-weight:500;">Rafael F.</div>
+              <div class="rank-badge">🥇 Nível 5</div>
+            </div>
+          </div>
+          <button class="btn btn-secondary" style="width:auto;padding:9px 18px;font-size:12px;">Tenho interesse</button>
+        </div>
+      </div>
+    </div>
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+      <div class="nav-item active">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#9F67FF" stroke-width="1.8" stroke-linecap="round"/><polyline points="9,22 9,12 15,12 15,22" stroke="#9F67FF" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Início</span>
+      </div>
+      <div class="nav-item">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="#7E7A9A" stroke-width="1.8"/><circle cx="12" cy="10" r="3" stroke="#7E7A9A" stroke-width="1.8"/></svg>
+        <span>Mapa</span>
+      </div>
+      <div class="nav-item" style="opacity:1;">
+        <div class="nav-add">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="nav-item">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#7E7A9A" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Chat</span>
+      </div>
+      <div class="nav-item">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#7E7A9A" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="#7E7A9A" stroke-width="1.8"/></svg>
+        <span>Perfil</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETALHE DA TAREFA -->
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen" style="padding-bottom:80px;">
+      <div style="padding:14px 22px 0;display:flex;align-items:center;gap:10px;">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#7E7A9A" stroke-width="2" stroke-linecap="round"/></svg>
+        <span style="font-size:13px;color:#7E7A9A;">Detalhe da tarefa</span>
+      </div>
+
+      <!-- hero -->
+      <div style="padding:16px 22px;">
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <div class="pill">💻 Tech</div>
+          <div class="pill" style="background:rgba(52,211,153,.1);color:#6EE7B7;border-color:rgba(52,211,153,.25);">⭐ Destaque</div>
+        </div>
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;line-height:1.3;margin-bottom:8px;">Ajuda para configurar roteador wi-fi e resolver queda de sinal</div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#9F67FF;">R$65</div>
+          <div>
+            <div style="font-size:12px;color:#7E7A9A;">⏱ Até 1 hora</div>
+            <div style="font-size:12px;color:#7E7A9A;">🌐 Presencial</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- descrição -->
+      <div style="padding:12px 22px;">
+        <div class="section-sm" style="margin-bottom:8px;">Descrição</div>
+        <div style="font-size:13px;color:#C4B5FD;line-height:1.6;">Preciso de alguém que entenda de redes para configurar meu roteador TP-Link. O sinal cai toda hora e não consigo fazer a reconexão sozinho. Tenho o manual e todos os acessos.</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- local no mapa -->
+      <div style="padding:12px 22px 0;">
+        <div class="section-sm" style="margin-bottom:10px;">Localização</div>
+      </div>
+      <div class="map-placeholder">
+        <div style="position:relative;z-index:1;text-align:center;">
+          <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="#9F67FF" stroke-width="1.8"/><circle cx="12" cy="10" r="3" fill="rgba(159,103,255,.3)" stroke="#9F67FF" stroke-width="1.8"/></svg>
+          <div style="font-size:12px;color:#7E7A9A;margin-top:4px;">Rua das Acácias, 450<br>1.2 km de você</div>
+        </div>
+      </div>
+
+      <div class="divider" style="margin-top:12px;"></div>
+
+      <!-- recrutador -->
+      <div style="padding:12px 22px;">
+        <div class="section-sm" style="margin-bottom:10px;">Recrutador</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="avatar" style="width:44px;height:44px;border-radius:14px;background:rgba(124,58,237,.2);color:#A78BFA;font-size:16px;">MA</div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;">Marcos Alves</div>
+            <div style="font-size:12px;color:#7E7A9A;">12 tarefas publicadas</div>
+          </div>
+          <div class="rank-badge">🏆 Nível 4</div>
+        </div>
+      </div>
+
+      <div style="padding:8px 16px 0;display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-primary">💬 Entrar em contato</button>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item active">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#9F67FF" stroke-width="1.8" stroke-linecap="round"/><polyline points="9,22 9,12 15,12 15,22" stroke="#9F67FF" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Início</span>
+      </div>
+      <div class="nav-item">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="#7E7A9A" stroke-width="1.8"/><circle cx="12" cy="10" r="3" stroke="#7E7A9A" stroke-width="1.8"/></svg>
+        <span>Mapa</span>
+      </div>
+      <div class="nav-item" style="opacity:1;"><div class="nav-add"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></div></div>
+      <div class="nav-item">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#7E7A9A" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Chat</span>
+      </div>
+      <div class="nav-item">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#7E7A9A" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="#7E7A9A" stroke-width="1.8"/></svg>
+        <span>Perfil</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SEÇÃO 3 — PUBLICAR TAREFA
+══════════════════════════════════════════════════════════════ -->
+<div class="section-label">03 — Publicar Tarefa</div>
+<div class="screens-row">
+
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen" style="padding-bottom:90px;">
+      <div style="padding:16px 22px 12px;display:flex;align-items:center;justify-content:space-between;">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#7E7A9A" stroke-width="2" stroke-linecap="round"/></svg>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">Nova Tarefa</div>
+        <div style="font-size:12px;color:#7E7A9A;">Cancelar</div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Título da tarefa</div>
+        <input class="input-field focused" placeholder="Ex: Configurar impressora HP..." readonly>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Descrição completa</div>
+        <textarea class="input-field textarea" placeholder="Descreva tudo que precisa ser feito, requisitos, materiais disponíveis..." readonly></textarea>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 12px;">
+        <div>
+          <div class="input-label">Valor (R$)</div>
+          <input class="input-field" placeholder="65,00" readonly>
+        </div>
+        <div>
+          <div class="input-label">Tempo estimado</div>
+          <div class="input-field" style="display:flex;align-items:center;justify-content:space-between;color:#A78BFA;font-size:13px;">1 hora <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/></svg></div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Nicho / Categoria</div>
+        <div class="input-field" style="display:flex;align-items:center;justify-content:space-between;color:#A78BFA;font-size:13px;">💻 Tecnologia & Design <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Tipo de serviço</div>
+        <div style="display:flex;gap:8px;">
+          <div class="quiz-option selected" style="flex:1;margin:0;padding:11px 12px;">
+            <div class="quiz-option-check"><svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+            <div style="font-size:13px;">📍 Presencial</div>
+          </div>
+          <div class="quiz-option" style="flex:1;margin:0;padding:11px 12px;">
+            <div class="quiz-option-check"></div>
+            <div style="font-size:13px;">🌐 Remoto</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- plano de divulgação -->
+      <div style="padding:4px 22px 12px;">
+        <div class="section-sm" style="margin-bottom:10px;">Como publicar?</div>
+      </div>
+      <div class="plan-card free" style="margin-bottom:8px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="width:20px;height:20px;border-radius:6px;border:1.5px solid #7E7A9A;display:flex;align-items:center;justify-content:center;margin-top:2px;"></div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;">Publicação Avulsa</div>
+            <div style="font-size:12px;color:#7E7A9A;margin-top:2px;">Aparece no feed · Sem destaque</div>
+          </div>
+          <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#F5F3FF;">R$9,90</div>
+        </div>
+      </div>
+      <div class="plan-card pro">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="width:20px;height:20px;border-radius:6px;background:#7C3AED;display:flex;align-items:center;justify-content:center;margin-top:2px;flex-shrink:0;">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;">Plano Mensal ✨</div>
+            <div style="font-size:12px;color:#C4B5FD;margin-top:2px;">Todas as tarefas em <strong>destaque</strong> · Prioridade no feed</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#A78BFA;">R$19,90</div>
+            <div style="font-size:10px;color:#7E7A9A;">/mês</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:14px 16px 0;">
+        <button class="btn btn-primary">Publicar tarefa →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SEÇÃO 4 — CHAT INTERNO
+══════════════════════════════════════════════════════════════ -->
+<div class="section-label">04 — Chat &amp; Negociação</div>
+<div class="screens-row">
+
+  <!-- LISTA DE CHATS -->
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen" style="padding-bottom:80px;">
+      <div class="page-title-area">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;">Mensagens</div>
+          <div style="font-size:12px;color:#7E7A9A;margin-top:2px;">3 conversas ativas</div>
+        </div>
+      </div>
+      <div class="search-bar"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="#7E7A9A" stroke-width="1.8"/><path d="M21 21l-4.35-4.35" stroke="#7E7A9A" stroke-width="1.8" stroke-linecap="round"/></svg>Buscar conversa...</div>
+
+      <!-- item 1 -->
+      <div style="padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(138,99,255,.1);">
+        <div style="position:relative;">
+          <div class="avatar" style="width:46px;height:46px;border-radius:16px;background:rgba(124,58,237,.2);color:#A78BFA;font-size:17px;">MA</div>
+          <div style="width:10px;height:10px;background:#34D399;border-radius:50%;border:2px solid var(--bg);position:absolute;bottom:-1px;right:-1px;"></div>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <div style="font-size:14px;font-weight:600;">Marcos Alves</div>
+            <div style="font-size:11px;color:#7E7A9A;">agora</div>
+          </div>
+          <div style="font-size:12px;color:#7E7A9A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Ótimo! Pode vir às 14h hoje?</div>
+          <div style="font-size:11px;color:#9F67FF;margin-top:3px;">💻 Configurar roteador · R$65</div>
+        </div>
+        <div style="width:18px;height:18px;background:#7C3AED;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">2</div>
+      </div>
+
+      <!-- item 2 -->
+      <div style="padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(138,99,255,.1);opacity:.7;">
+        <div class="avatar" style="width:46px;height:46px;border-radius:16px;background:rgba(52,211,153,.12);color:#34D399;font-size:17px;">RF</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <div style="font-size:14px;font-weight:600;">Rafael F.</div>
+            <div style="font-size:11px;color:#7E7A9A;">1h</div>
+          </div>
+          <div style="font-size:12px;color:#7E7A9A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Você: Tudo certo, mandei no e-mail!</div>
+          <div style="font-size:11px;color:#9F67FF;margin-top:3px;">🎨 Editar fotos · R$50</div>
+        </div>
+      </div>
+
+      <!-- item 3 -->
+      <div style="padding:12px 16px;display:flex;align-items:center;gap:12px;opacity:.5;">
+        <div class="avatar" style="width:46px;height:46px;border-radius:16px;background:rgba(251,191,36,.1);color:#FCD34D;font-size:17px;">CS</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <div style="font-size:14px;font-weight:600;">Carla Souza</div>
+            <div style="font-size:11px;color:#7E7A9A;">ontem</div>
+          </div>
+          <div style="font-size:12px;color:#7E7A9A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Tarefa concluída ✅</div>
+          <div style="font-size:11px;color:#7E7A9A;margin-top:3px;">📦 Entrega · R$30</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Início</span></div>
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="#7E7A9A" stroke-width="1.8"/><circle cx="12" cy="10" r="3" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Mapa</span></div>
+      <div class="nav-item" style="opacity:1;"><div class="nav-add"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></div></div>
+      <div class="nav-item active"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#9F67FF" stroke-width="1.8"/></svg><span>Chat</span></div>
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#7E7A9A" stroke-width="1.8"/><circle cx="12" cy="7" r="4" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Perfil</span></div>
+    </div>
+  </div>
+
+  <!-- CHAT ABERTO -->
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen" style="padding-bottom:132px;">
+      <!-- header do chat -->
+      <div style="padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(138,99,255,.12);">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#7E7A9A" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="avatar" style="width:36px;height:36px;border-radius:12px;background:rgba(124,58,237,.2);color:#A78BFA;">MA</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;">Marcos Alves</div>
+          <div style="font-size:11px;color:#34D399;">● online agora</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#9F67FF;">R$65</div>
+          <div class="pill green" style="font-size:10px;padding:2px 7px;">Em negociação</div>
+        </div>
+      </div>
+
+      <!-- task mini card -->
+      <div style="margin:10px 16px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:10px;padding:10px 12px;">
+        <div style="font-size:11px;color:#A78BFA;margin-bottom:3px;font-weight:600;">TAREFA EM DISCUSSÃO</div>
+        <div style="font-size:13px;font-weight:500;">Configurar roteador wi-fi e resolver queda de sinal</div>
+      </div>
+
+      <!-- mensagens -->
+      <div style="display:flex;flex-direction:column;padding:0 16px;">
+        <div style="text-align:center;margin-bottom:12px;"><span style="font-size:11px;color:#7E7A9A;background:var(--card);padding:3px 10px;border-radius:100px;">Hoje · 09:15</span></div>
+
+        <div class="chat-time">Marcos · 09:15</div>
+        <div class="chat-bubble in">Olá! Vi que você tem interesse na minha tarefa. Você tem experiência com roteadores TP-Link?</div>
+
+        <div class="chat-time" style="text-align:right;">Você · 09:17</div>
+        <div class="chat-bubble out">Sim! Já configurei bastante. Qual o modelo exato? Pode me mandar uma foto do equipamento?</div>
+
+        <div class="chat-time">Marcos · 09:18</div>
+        <div class="chat-bubble in">É um Archer C6. Vou te mandar foto agora. O problema é que cai toda hora, especialmente à noite.</div>
+
+        <div class="chat-bubble in" style="background:rgba(124,58,237,.12);border:1px solid var(--border);">
+          <div style="width:100%;height:70px;background:var(--surface);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#7E7A9A" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.5" fill="#7E7A9A"/><path d="M21 15l-5-5L5 21" stroke="#7E7A9A" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div style="font-size:11px;color:#7E7A9A;">roteador_tp-link.jpg</div>
+        </div>
+
+        <div class="chat-time" style="text-align:right;">Você · 09:20</div>
+        <div class="chat-bubble out">Entendido. Consigo resolver isso. Posso ir hoje à tarde, por volta das 14h. R$65 tá ótimo.</div>
+
+        <div class="chat-time">Marcos · 09:21</div>
+        <div class="chat-bubble in">Ótimo! Pode vir às 14h hoje? Endereço: Rua das Acácias, 450.</div>
+      </div>
+    </div>
+    <!-- chat input -->
+    <div class="chat-input-bar">
+      <div class="chat-input" style="color:#7E7A9A;">Digite uma mensagem...</div>
+      <div style="display:flex;gap:8px;">
+        <div style="width:38px;height:38px;background:var(--card);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#7E7A9A" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.5" fill="#7E7A9A"/></svg>
+        </div>
+        <div class="chat-send">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Início</span></div>
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="#7E7A9A" stroke-width="1.8"/><circle cx="12" cy="10" r="3" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Mapa</span></div>
+      <div class="nav-item" style="opacity:1;"><div class="nav-add"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></div></div>
+      <div class="nav-item active"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#9F67FF" stroke-width="1.8"/></svg><span>Chat</span></div>
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#7E7A9A" stroke-width="1.8"/><circle cx="12" cy="7" r="4" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Perfil</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SEÇÃO 5 — REALIZAÇÃO DA TAREFA (FOTO)
+══════════════════════════════════════════════════════════════ -->
+<div class="section-label">05 — Realização da Tarefa</div>
+<div class="screens-row">
+
+  <!-- FOTO INÍCIO -->
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen" style="padding-bottom:30px;">
+      <div style="padding:16px 22px 8px;">
+        <div style="font-size:12px;color:#7E7A9A;margin-bottom:4px;">TAREFA ACEITA</div>
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;">Confirmação de início</div>
+      </div>
+
+      <!-- progresso da tarefa -->
+      <div style="margin:0 16px 16px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-size:12px;font-weight:500;">💻 Configurar roteador · R$65</div>
+          <div class="pill yellow">Em andamento</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;height:28px;background:var(--purple);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+            <div style="font-size:10px;color:#9F67FF;font-weight:600;">Aceito</div>
+          </div>
+          <div style="flex:1;height:2px;background:linear-gradient(90deg,var(--purple),rgba(124,58,237,.3));margin:0 6px;margin-bottom:16px;"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;height:28px;background:rgba(124,58,237,.2);border:2px solid var(--purple);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <div style="width:8px;height:8px;background:var(--purple);border-radius:50%;"></div>
+            </div>
+            <div style="font-size:10px;color:#9F67FF;font-weight:600;">Início</div>
+          </div>
+          <div style="flex:1;height:2px;background:rgba(126,122,154,.2);margin:0 6px;margin-bottom:16px;"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;height:28px;background:rgba(126,122,154,.12);border:2px solid rgba(126,122,154,.2);border-radius:50%;"></div>
+            <div style="font-size:10px;color:#7E7A9A;">Conclusão</div>
+          </div>
+          <div style="flex:1;height:2px;background:rgba(126,122,154,.2);margin:0 6px;margin-bottom:16px;"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;height:28px;background:rgba(126,122,154,.12);border:2px solid rgba(126,122,154,.2);border-radius:50%;"></div>
+            <div style="font-size:10px;color:#7E7A9A;">Pagamento</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- instrução foto -->
+      <div style="padding:0 22px 12px;">
+        <div style="font-size:13px;color:#C4B5FD;line-height:1.5;">Para confirmar o início do serviço, tire uma foto mostrando você no local com o equipamento visível.</div>
+      </div>
+
+      <div class="photo-box">
+        <svg width="48" height="48" fill="none" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#7E7A9A" stroke-width="1.5"/><circle cx="12" cy="13" r="4" stroke="#7E7A9A" stroke-width="1.5"/></svg>
+        <p>Tire uma foto para confirmar<br>que você está no local da tarefa</p>
+        <button class="btn btn-primary" style="padding:11px 24px;width:auto;margin-top:4px;">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="white" stroke-width="1.8"/><circle cx="12" cy="13" r="4" stroke="white" stroke-width="1.8"/></svg>
+          Abrir câmera
+        </button>
+      </div>
+
+      <div style="padding:4px 22px;display:flex;align-items:center;gap:8px;">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#7E7A9A" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="#7E7A9A" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div style="font-size:12px;color:#7E7A9A;line-height:1.4;">A foto é usada para confirmar sua presença e proteger ambas as partes de possíveis fraudes.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOTO CONCLUSÃO + PAGAMENTO -->
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen" style="padding-bottom:30px;">
+      <div style="padding:16px 22px 12px;">
+        <div style="font-size:12px;color:#34D399;font-weight:600;margin-bottom:4px;">✅ QUASE LÁ</div>
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;">Confirmar conclusão</div>
+      </div>
+
+      <!-- foto tirada simulada -->
+      <div style="margin:0 16px 12px;height:160px;background:var(--card);border:1px solid rgba(52,211,153,.3);border-radius:var(--r);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(52,211,153,.08),rgba(124,58,237,.08));"></div>
+        <div style="text-align:center;z-index:1;">
+          <div style="font-size:40px;margin-bottom:6px;">📸</div>
+          <div style="font-size:12px;color:#6EE7B7;font-weight:500;">Foto de início registrada</div>
+          <div style="font-size:11px;color:#7E7A9A;">14:02 · Rua das Acácias, 450</div>
+        </div>
+        <div style="position:absolute;top:10px;right:10px;" class="pill green">✓ Verificada</div>
+      </div>
+
+      <div style="padding:4px 22px 12px;">
+        <div style="font-size:13px;color:#C4B5FD;line-height:1.5;">Serviço realizado? Tire a foto de conclusão para liberar seu pagamento.</div>
+      </div>
+
+      <div class="photo-box" style="border-color:rgba(52,211,153,.3);">
+        <svg width="48" height="48" fill="none" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#34D399" stroke-width="1.5"/><circle cx="12" cy="13" r="4" stroke="#34D399" stroke-width="1.5"/></svg>
+        <p style="color:#6EE7B7;">Foto de conclusão do serviço<br><span style="color:#7E7A9A;">Mostre o resultado do trabalho</span></p>
+        <button class="btn btn-primary" style="padding:11px 24px;width:auto;margin-top:4px;background:linear-gradient(135deg,#059669,#10B981);box-shadow:0 6px 20px rgba(16,185,129,.35);">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="white" stroke-width="1.8"/><circle cx="12" cy="13" r="4" stroke="white" stroke-width="1.8"/></svg>
+          Tirar foto final
+        </button>
+      </div>
+
+      <!-- pagamento vai ser liberado -->
+      <div style="margin:0 16px;background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2);border-radius:var(--r);padding:14px;">
+        <div style="font-size:12px;color:#6EE7B7;font-weight:600;margin-bottom:6px;">💰 Pagamento pendente</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:13px;color:#C4B5FD;">Será liberado após a confirmação</div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#34D399;">R$65</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SEÇÃO 6 — PERFIL & RANKING
+══════════════════════════════════════════════════════════════ -->
+<div class="section-label">06 — Perfil &amp; Ranking</div>
+<div class="screens-row">
+
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen" style="padding-bottom:80px;">
+      <!-- hero do perfil -->
+      <div style="padding:20px 22px;display:flex;align-items:center;gap:14px;">
+        <div style="position:relative;">
+          <div style="width:64px;height:64px;background:linear-gradient(135deg,rgba(124,58,237,.4),rgba(159,103,255,.2));border:2px solid rgba(138,99,255,.5);border-radius:20px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#A78BFA;">L</div>
+          <div style="position:absolute;bottom:-4px;right:-4px;background:linear-gradient(135deg,#B45309,#D97706);border-radius:6px;padding:2px 5px;font-size:10px;font-weight:700;color:white;border:1.5px solid var(--bg);">Nv3</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;">Luiz Oliveira</div>
+          <div style="font-size:12px;color:#7E7A9A;margin-top:2px;">💻 Tech · 📝 Administrativo</div>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:6px;">
+            <svg width="12" height="12" fill="#FBBF24" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+            <svg width="12" height="12" fill="#FBBF24" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+            <svg width="12" height="12" fill="#FBBF24" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+            <svg width="12" height="12" fill="#FBBF24" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+            <svg width="12" height="12" fill="rgba(251,191,36,.25)" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="#FBBF24" stroke-width="1.5"/></svg>
+            <span style="font-size:11px;color:#7E7A9A;margin-left:3px;">4.0 · 7 avaliações</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- xp progress -->
+      <div style="margin:0 16px 16px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-size:12px;color:#C4B5FD;font-weight:600;">🏆 Nível 3 — Profissional</div>
+          <div style="font-size:11px;color:#7E7A9A;">7 / 15 tarefas</div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:47%"></div>
+        </div>
+        <div style="font-size:11px;color:#7E7A9A;margin-top:6px;">Mais 8 tarefas para o Nível 4 ✨</div>
+      </div>
+
+      <!-- stats -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Tarefas feitas</div>
+          <div class="stat-val">7</div>
+          <div class="stat-sub">+2 este mês</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ganho total</div>
+          <div class="stat-val" style="font-size:17px;color:#9F67FF;">R$380</div>
+          <div class="stat-sub">+R$115 este mês</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Taxa de conclusão</div>
+          <div class="stat-val" style="color:#34D399;">100%</div>
+          <div class="stat-sub" style="color:#7E7A9A;">7 de 7</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avaliação média</div>
+          <div class="stat-val" style="color:#FBBF24;">4.0 ⭐</div>
+          <div class="stat-sub" style="color:#7E7A9A;">7 avaliações</div>
+        </div>
+      </div>
+
+      <div style="padding:0 22px 10px;">
+        <div class="section-sm" style="margin-bottom:10px;">Especialidades</div>
+        <div>
+          <span class="tag">Redes & Wi-Fi</span>
+          <span class="tag">Suporte técnico</span>
+          <span class="tag">Configurações de PC</span>
+          <span class="tag">Planilhas Excel</span>
+        </div>
+      </div>
+
+      <div style="padding:0 16px;">
+        <button class="btn btn-secondary">Editar perfil</button>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Início</span></div>
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="#7E7A9A" stroke-width="1.8"/><circle cx="12" cy="10" r="3" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Mapa</span></div>
+      <div class="nav-item" style="opacity:1;"><div class="nav-add"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></div></div>
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Chat</span></div>
+      <div class="nav-item active"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#9F67FF" stroke-width="1.8"/><circle cx="12" cy="7" r="4" stroke="#9F67FF" stroke-width="1.8"/></svg><span>Perfil</span></div>
+    </div>
+  </div>
+
+  <!-- RANKING GLOBAL -->
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen" style="padding-bottom:80px;">
+      <div class="page-title-area">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;">Ranking</div>
+          <div style="font-size:12px;color:#7E7A9A;margin-top:2px;">Top performers esta semana</div>
+        </div>
+        <div class="filter-chips" style="padding:0;margin:0;">
+          <div class="chip active" style="font-size:11px;padding:4px 10px;">Semana</div>
+          <div class="chip" style="font-size:11px;padding:4px 10px;">Mês</div>
+        </div>
+      </div>
+
+      <!-- top 3 podium -->
+      <div style="margin:8px 16px 16px;background:linear-gradient(135deg,rgba(124,58,237,.12),var(--card));border:1px solid var(--border);border-radius:var(--r);padding:16px;">
+        <div style="display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-bottom:4px;">
+          <!-- 2º -->
+          <div style="text-align:center;flex:1;">
+            <div style="width:42px;height:42px;background:rgba(226,232,240,.1);border:2px solid rgba(226,232,240,.25);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#CBD5E1;">CS</div>
+            <div style="font-size:11px;font-weight:600;color:#CBD5E1;">Carla S.</div>
+            <div style="font-size:10px;color:#7E7A9A;">11 tarefas</div>
+            <div style="width:100%;height:48px;background:rgba(226,232,240,.08);border-radius:6px 6px 0 0;margin-top:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">🥈</div>
+          </div>
+          <!-- 1º -->
+          <div style="text-align:center;flex:1;">
+            <div style="position:relative;display:inline-block;margin-bottom:6px;">
+              <div style="width:50px;height:50px;background:linear-gradient(135deg,rgba(251,191,36,.3),rgba(251,191,36,.1));border:2px solid rgba(251,191,36,.6);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#FCD34D;">RF</div>
+              <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:16px;">👑</div>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:#FCD34D;">Rafael F.</div>
+            <div style="font-size:10px;color:#7E7A9A;">18 tarefas</div>
+            <div style="width:100%;height:68px;background:linear-gradient(180deg,rgba(251,191,36,.15),rgba(251,191,36,.05));border-radius:6px 6px 0 0;margin-top:8px;display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid rgba(251,191,36,.2);border-bottom:none;">🥇</div>
+          </div>
+          <!-- 3º -->
+          <div style="text-align:center;flex:1;">
+            <div style="width:42px;height:42px;background:rgba(180,83,9,.12);border:2px solid rgba(180,83,9,.3);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#D97706;">MA</div>
+            <div style="font-size:11px;font-weight:600;color:#D97706;">Marcos A.</div>
+            <div style="font-size:10px;color:#7E7A9A;">9 tarefas</div>
+            <div style="width:100%;height:38px;background:rgba(180,83,9,.08);border-radius:6px 6px 0 0;margin-top:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">🥉</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- lista abaixo -->
+      <div style="padding:0 22px 6px;"><div class="section-sm">Sua posição</div></div>
+
+      <div style="margin:0 16px 8px;background:rgba(124,58,237,.08);border:1.5px solid rgba(124,58,237,.35);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px;">
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#9F67FF;width:28px;text-align:center;">#7</div>
+        <div class="avatar" style="width:36px;height:36px;border-radius:12px;background:rgba(124,58,237,.2);color:#A78BFA;">L</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;">Luiz Oliveira <span style="font-size:11px;color:#9F67FF;">(você)</span></div>
+          <div style="font-size:11px;color:#7E7A9A;">7 tarefas · R$380</div>
+        </div>
+        <div class="rank-badge">Nv3</div>
+      </div>
+
+      <div style="padding:4px 22px 8px;"><div class="section-sm">Ranking geral</div></div>
+
+      <div style="padding:0 16px;display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(138,99,255,.08);">
+          <div style="font-size:13px;font-weight:700;color:#FCD34D;width:24px;">#1</div>
+          <div class="avatar" style="width:32px;height:32px;border-radius:10px;background:rgba(251,191,36,.12);color:#FCD34D;font-size:12px;">RF</div>
+          <div style="flex:1;"><div style="font-size:13px;font-weight:500;">Rafael F.</div><div style="font-size:11px;color:#7E7A9A;">18 tarefas</div></div>
+          <div class="rank-badge">Nv5</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(138,99,255,.08);">
+          <div style="font-size:13px;font-weight:700;color:#CBD5E1;width:24px;">#2</div>
+          <div class="avatar" style="width:32px;height:32px;border-radius:10px;background:rgba(52,211,153,.1);color:#34D399;font-size:12px;">CS</div>
+          <div style="flex:1;"><div style="font-size:13px;font-weight:500;">Carla S.</div><div style="font-size:11px;color:#7E7A9A;">11 tarefas</div></div>
+          <div class="rank-badge" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:#C4B5FD;">Nv4</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(138,99,255,.08);">
+          <div style="font-size:13px;font-weight:700;color:#D97706;width:24px;">#3</div>
+          <div class="avatar" style="width:32px;height:32px;border-radius:10px;background:rgba(124,58,237,.15);color:#A78BFA;font-size:12px;">MA</div>
+          <div style="flex:1;"><div style="font-size:13px;font-weight:500;">Marcos A.</div><div style="font-size:11px;color:#7E7A9A;">9 tarefas</div></div>
+          <div class="rank-badge">Nv4</div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Início</span></div>
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="#7E7A9A" stroke-width="1.8"/><circle cx="12" cy="10" r="3" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Mapa</span></div>
+      <div class="nav-item" style="opacity:1;"><div class="nav-add"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></div></div>
+      <div class="nav-item"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#7E7A9A" stroke-width="1.8"/></svg><span>Chat</span></div>
+      <div class="nav-item active"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#9F67FF" stroke-width="1.8"/><circle cx="12" cy="7" r="4" stroke="#9F67FF" stroke-width="1.8"/></svg><span>Perfil</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SEÇÃO 7 — PLANOS DO RECRUTADOR
+══════════════════════════════════════════════════════════════ -->
+<div class="section-label">07 — Planos do Recrutador</div>
+<div class="screens-row">
+
+  <div class="phone">
+    <div class="phone-notch">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span></div>
+    </div>
+    <div class="phone-screen" style="padding-bottom:30px;">
+      <div style="padding:20px 22px 16px;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px;">Impulsione suas tarefas</div>
+        <div style="font-size:13px;color:#7E7A9A;line-height:1.5;">Alcance mais pessoas qualificadas e feche mais rápido</div>
+      </div>
+
+      <!-- avulso -->
+      <div class="plan-card free">
+        <div style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">Publicação Avulsa</div>
+            <div style="font-size:12px;color:#7E7A9A;margin-top:2px;">Para tarefas pontuais</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#F5F3FF;">R$9,90</div>
+            <div style="font-size:11px;color:#7E7A9A;">por tarefa</div>
+          </div>
+        </div>
+        <div class="divider" style="margin:10px 0;"></div>
+        <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#C4B5FD;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#9F67FF" stroke-width="2" stroke-linecap="round"/></svg>
+            Aparece no feed de tarefas
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#C4B5FD;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#9F67FF" stroke-width="2" stroke-linecap="round"/></svg>
+            Nicho direcionado automaticamente
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#7E7A9A;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#7E7A9A" stroke-width="2" stroke-linecap="round"/></svg>
+            Sem prioridade no feed
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#7E7A9A;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#7E7A9A" stroke-width="2" stroke-linecap="round"/></svg>
+            Sem badge de destaque
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:13px;padding:12px;">Publicar por R$9,90</button>
+      </div>
+
+      <!-- mensal PRO -->
+      <div class="plan-card pro">
+        <div style="position:absolute;top:14px;right:14px;background:linear-gradient(135deg,#7C3AED,#A78BFA);border-radius:6px;padding:3px 9px;font-size:10px;font-weight:700;color:white;letter-spacing:.05em;">POPULAR</div>
+        <div style="margin-bottom:10px;">
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:2px;">Plano Mensal Pro ✨</div>
+          <div style="font-size:12px;color:#A78BFA;">Recrutadores frequentes</div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:6px;margin-bottom:12px;">
+          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#A78BFA;line-height:1;">R$19,90</div>
+          <div style="font-size:13px;color:#7E7A9A;padding-bottom:4px;">/mês</div>
+        </div>
+        <div class="divider" style="margin:10px 0;background:rgba(138,99,255,.25);"></div>
+        <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#C4B5FD;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/></svg>
+            <strong style="color:#F5F3FF;">Todas</strong> as tarefas com destaque
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#C4B5FD;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/></svg>
+            Prioridade no topo do feed
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#C4B5FD;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/></svg>
+            Badge ⭐ em todas as publicações
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#C4B5FD;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/></svg>
+            Publicações ilimitadas no mês
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#C4B5FD;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/></svg>
+            Relatório de interesse por tarefa
+          </div>
+        </div>
+        <button class="btn btn-primary" style="font-size:13px;padding:13px;">Assinar por R$19,90/mês</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- footer -->
+<div style="text-align:center;margin-top:60px;padding:0 20px 20px;">
+  <div style="font-family:'Syne',sans-serif;font-size:13px;color:#3D3558;letter-spacing:.08em;">CASHTIME · MICRO-TAREFAS · 2024</div>
+</div>
+
+</body>
+</html>
