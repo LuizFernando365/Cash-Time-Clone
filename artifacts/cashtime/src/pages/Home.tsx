@@ -86,9 +86,9 @@ export default function Home() {
           </div>
         </div>
 
-        <div style={{ padding: "12px 22px 4px" }}>
-          <div style={{ fontSize: 12, color: "#7E7A9A" }}>Olá, <strong style={{ color: "#C4B5FD" }}>Luiz</strong> 👋</div>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 17, fontWeight: 700, marginTop: 2 }}>Tarefas para você</div>
+        <div style={{ padding: "12px var(--hpad) 4px" }}>
+          <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A" }}>Olá, <strong style={{ color: "#C4B5FD" }}>Luiz</strong> 👋</div>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(15px,4.5vw,19px)", fontWeight: 700, marginTop: 2 }}>Tarefas para você</div>
         </div>
 
         <div className="search-bar">
@@ -122,8 +122,8 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <span className={`pill ${task.categoryClass}`} style={task.categoryCustomStyle}>{task.category}</span>
-                  {task.ago && <span style={{ fontSize: 11, color: "#7E7A9A" }}>{task.ago}</span>}
+                  <span className={`pill ${task.categoryClass}`} style={(task as any).categoryCustomStyle}>{task.category}</span>
+                  {task.ago && <span style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>{task.ago}</span>}
                 </>
               )}
             </div>
@@ -146,7 +146,7 @@ export default function Home() {
                   </div>
                 )}
               </div>
-              <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 12 }}>
+              <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 8 }}>
                 <div className="card-price">{task.price}</div>
                 <span className="card-price-sub">{task.time}</span>
               </div>
@@ -154,17 +154,17 @@ export default function Home() {
 
             <div className="divider" style={{ margin: task.highlight ? "12px 0" : "10px 0" }} />
 
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
                 <div className="avatar" style={{ background: task.authorBg, color: task.authorColor }}>{task.author}</div>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 500 }}>{task.authorName}</div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: "clamp(11px,3vw,13px)", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{task.authorName}</div>
                   <div className="rank-badge" style={task.rankStyle}>{task.rank}</div>
                 </div>
               </div>
               <button
                 className={task.highlight ? "btn btn-primary" : "btn btn-secondary"}
-                style={{ width: "auto", padding: "9px 18px", fontSize: 12 }}
+                style={{ width: "auto", padding: "8px clamp(10px,3vw,16px)", fontSize: "clamp(11px,3vw,13px)", flexShrink: 0 }}
                 onClick={(e) => { e.stopPropagation(); navigate(`/task/${task.id}`); }}
               >
                 Tenho interesse

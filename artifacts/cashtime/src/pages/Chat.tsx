@@ -20,31 +20,31 @@ export default function Chat() {
     <>
       <div className="screen" style={{ paddingBottom: 132 }}>
         {/* Chat header */}
-        <div style={{ padding: "10px 16px", display: "flex", alignItems: "center", gap: 12, borderBottom: "1px solid rgba(138,99,255,.12)" }}>
+        <div style={{ padding: "10px var(--hpad)", display: "flex", alignItems: "center", gap: 12, borderBottom: "1px solid rgba(138,99,255,.12)" }}>
           <svg width="20" height="20" fill="none" viewBox="0 0 24 24" onClick={() => navigate("/messages")} style={{ cursor: "pointer" }}>
             <path d="M19 12H5M12 5l-7 7 7 7" stroke="#7E7A9A" strokeWidth="2" strokeLinecap="round" />
           </svg>
           <div className="avatar" style={{ width: 36, height: 36, borderRadius: 12, background: "rgba(124,58,237,.2)", color: "#A78BFA" }}>MA</div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 600 }}>Marcos Alves</div>
-            <div style={{ fontSize: 11, color: "#34D399" }}>● online agora</div>
+            <div style={{ fontSize: "clamp(13px,3.5vw,15px)", fontWeight: 600 }}>Marcos Alves</div>
+            <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#34D399" }}>● online agora</div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 700, color: "#9F67FF" }}>R$65</div>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(13px,3.8vw,15px)", fontWeight: 700, color: "#9F67FF" }}>R$65</div>
             <span className="pill pill-green" style={{ fontSize: 10, padding: "2px 7px" }}>Em negociação</span>
           </div>
         </div>
 
         {/* Task mini card */}
-        <div style={{ margin: "10px 16px", background: "rgba(124,58,237,.08)", border: "1px solid rgba(124,58,237,.2)", borderRadius: 10, padding: "10px 12px" }}>
-          <div style={{ fontSize: 11, color: "#A78BFA", marginBottom: 3, fontWeight: 600 }}>TAREFA EM DISCUSSÃO</div>
-          <div style={{ fontSize: 13, fontWeight: 500 }}>Configurar roteador wi-fi e resolver queda de sinal</div>
+        <div style={{ margin: "10px var(--hpad)", background: "rgba(124,58,237,.08)", border: "1px solid rgba(124,58,237,.2)", borderRadius: 10, padding: "10px 12px" }}>
+          <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#A78BFA", marginBottom: 3, fontWeight: 600 }}>TAREFA EM DISCUSSÃO</div>
+          <div style={{ fontSize: "clamp(12px,3.3vw,14px)", fontWeight: 500 }}>Configurar roteador wi-fi e resolver queda de sinal</div>
         </div>
 
         {/* Messages */}
-        <div style={{ display: "flex", flexDirection: "column", padding: "0 16px" }}>
+        <div style={{ display: "flex", flexDirection: "column", padding: "0 var(--hpad)" }}>
           <div style={{ textAlign: "center", marginBottom: 12 }}>
-            <span style={{ fontSize: 11, color: "#7E7A9A", background: "var(--card)", padding: "3px 10px", borderRadius: 100 }}>Hoje · 09:15</span>
+            <span style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A", background: "var(--card)", padding: "3px 10px", borderRadius: 100 }}>Hoje · 09:15</span>
           </div>
 
           {messages.map((m, i) => (
@@ -61,7 +61,7 @@ export default function Chat() {
                       <path d="M21 15l-5-5L5 21" stroke="#7E7A9A" strokeWidth="1.8" strokeLinecap="round" />
                     </svg>
                   </div>
-                  <div style={{ fontSize: 11, color: "#7E7A9A" }}>{m.text}</div>
+                  <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>{m.text}</div>
                 </div>
               ) : (
                 <div className={`chat-bubble ${m.from === "me" ? "chat-bubble-out" : "chat-bubble-in"}`}>
@@ -74,8 +74,8 @@ export default function Chat() {
       </div>
 
       {/* Chat input */}
-      <div style={{ position: "absolute", bottom: 68, left: 0, right: 0, padding: "10px 16px", background: "rgba(13,11,20,0.97)", borderTop: "1px solid var(--border)", display: "flex", gap: 8, alignItems: "center" }}>
-        <div style={{ flex: 1, background: "var(--card)", border: "1px solid var(--border)", borderRadius: 100, padding: "10px 16px", fontSize: 13, color: "#7E7A9A" }}>
+      <div style={{ position: "absolute", bottom: 68, left: 0, right: 0, padding: "10px var(--hpad)", background: "rgba(13,11,20,0.97)", borderTop: "1px solid var(--border)", display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ flex: 1, background: "var(--card)", border: "1px solid var(--border)", borderRadius: 100, padding: "10px 16px", fontSize: "clamp(12px,3.3vw,14px)", color: "#7E7A9A" }}>
           Digite uma mensagem...
         </div>
         <div style={{ display: "flex", gap: 8 }}>

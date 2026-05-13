@@ -5,26 +5,26 @@ export default function TaskCompletion() {
 
   return (
     <div className="screen" style={{ paddingBottom: 30 }}>
-      <div style={{ padding: "16px 22px 12px" }}>
-        <div style={{ fontSize: 12, color: "#34D399", fontWeight: 600, marginBottom: 4 }}>✅ QUASE LÁ</div>
-        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 18, fontWeight: 700 }}>Confirmar conclusão</div>
+      <div style={{ padding: "16px var(--hpad) 12px" }}>
+        <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#34D399", fontWeight: 600, marginBottom: 4 }}>✅ QUASE LÁ</div>
+        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(16px,4.5vw,20px)", fontWeight: 700 }}>Confirmar conclusão</div>
       </div>
 
       {/* Photo taken */}
-      <div style={{ margin: "0 16px 12px", height: 160, background: "var(--card)", border: "1px solid rgba(52,211,153,.3)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+      <div style={{ margin: "0 var(--hpad) 12px", height: "clamp(130px,38vw,170px)", background: "var(--card)", border: "1px solid rgba(52,211,153,.3)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(52,211,153,.08),rgba(124,58,237,.08))" }} />
         <div style={{ textAlign: "center", zIndex: 1 }}>
-          <div style={{ fontSize: 40, marginBottom: 6 }}>📸</div>
-          <div style={{ fontSize: 12, color: "#6EE7B7", fontWeight: 500 }}>Foto de início registrada</div>
-          <div style={{ fontSize: 11, color: "#7E7A9A" }}>14:02 · Rua das Acácias, 450</div>
+          <div style={{ fontSize: "clamp(32px,10vw,44px)", marginBottom: 6 }}>📸</div>
+          <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#6EE7B7", fontWeight: 500 }}>Foto de início registrada</div>
+          <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>14:02 · Rua das Acácias, 450</div>
         </div>
         <div style={{ position: "absolute", top: 10, right: 10 }}>
           <span className="pill pill-green" style={{ fontSize: 10 }}>✓ Verificada</span>
         </div>
       </div>
 
-      <div style={{ padding: "4px 22px 12px" }}>
-        <div style={{ fontSize: 13, color: "#C4B5FD", lineHeight: 1.5 }}>
+      <div style={{ padding: "4px var(--hpad) 12px" }}>
+        <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#C4B5FD", lineHeight: 1.5 }}>
           Serviço realizado? Tire a foto de conclusão para liberar seu pagamento.
         </div>
       </div>
@@ -48,11 +48,11 @@ export default function TaskCompletion() {
       </div>
 
       {/* Payment pending */}
-      <div style={{ margin: "0 16px", background: "rgba(52,211,153,.07)", border: "1px solid rgba(52,211,153,.2)", borderRadius: 16, padding: 14 }}>
-        <div style={{ fontSize: 12, color: "#6EE7B7", fontWeight: 600, marginBottom: 6 }}>💰 Pagamento pendente</div>
+      <div style={{ margin: "0 var(--hpad)", background: "rgba(52,211,153,.07)", border: "1px solid rgba(52,211,153,.2)", borderRadius: 16, padding: "clamp(12px,3.5vw,15px)" }}>
+        <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#6EE7B7", fontWeight: 600, marginBottom: 6 }}>💰 Pagamento pendente</div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ fontSize: 13, color: "#C4B5FD" }}>Será liberado após a confirmação</div>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 800, color: "#34D399" }}>R$65</div>
+          <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#C4B5FD" }}>Será liberado após a confirmação</div>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(18px,5vw,22px)", fontWeight: 800, color: "#34D399" }}>R$65</div>
         </div>
       </div>
     </div>

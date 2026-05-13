@@ -49,10 +49,10 @@ export default function Messages() {
   return (
     <>
       <div className="screen" style={{ paddingBottom: 80 }}>
-        <div style={{ padding: "16px 22px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ padding: "16px var(--hpad) 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700 }}>Mensagens</div>
-            <div style={{ fontSize: 12, color: "#7E7A9A", marginTop: 2 }}>3 conversas ativas</div>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(17px,5vw,21px)", fontWeight: 700 }}>Mensagens</div>
+            <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginTop: 2 }}>3 conversas ativas</div>
           </div>
         </div>
 
@@ -67,22 +67,22 @@ export default function Messages() {
         {conversations.map((c) => (
           <div
             key={c.id}
-            style={{ padding: "12px 16px", display: "flex", alignItems: "center", gap: 12, borderBottom: "1px solid rgba(138,99,255,.1)", opacity: c.opacity, cursor: "pointer" }}
+            style={{ padding: "12px var(--hpad)", display: "flex", alignItems: "center", gap: 12, borderBottom: "1px solid rgba(138,99,255,.1)", opacity: c.opacity, cursor: "pointer" }}
             onClick={() => navigate(`/chat/${c.id}`)}
           >
             <div style={{ position: "relative" }}>
-              <div className="avatar" style={{ width: 46, height: 46, borderRadius: 16, background: c.bg, color: c.color, fontSize: 17 }}>{c.initials}</div>
+              <div className="avatar" style={{ width: "clamp(40px,11vw,48px)", height: "clamp(40px,11vw,48px)", borderRadius: 16, background: c.bg, color: c.color, fontSize: "clamp(14px,4vw,18px)" }}>{c.initials}</div>
               {c.online && (
                 <div style={{ width: 10, height: 10, background: "#34D399", borderRadius: "50%", border: "2px solid var(--bg)", position: "absolute", bottom: -1, right: -1 }} />
               )}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3 }}>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{c.name}</div>
-                <div style={{ fontSize: 11, color: "#7E7A9A" }}>{c.time}</div>
+                <div style={{ fontSize: "clamp(13px,3.5vw,15px)", fontWeight: 600 }}>{c.name}</div>
+                <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>{c.time}</div>
               </div>
-              <div style={{ fontSize: 12, color: "#7E7A9A", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.lastMsg}</div>
-              <div style={{ fontSize: 11, color: "#9F67FF", marginTop: 3 }}>{c.task}</div>
+              <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.lastMsg}</div>
+              <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#9F67FF", marginTop: 3 }}>{c.task}</div>
             </div>
             {c.unread > 0 && (
               <div style={{ width: 18, height: 18, background: "#7C3AED", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
