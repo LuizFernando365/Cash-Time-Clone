@@ -30,7 +30,9 @@ export default function Splash() {
       </div>
 
       {/* MIDDLE — features, always vertically centered in remaining space */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 var(--hpad)" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 var(--hpad)" }}>
+        {/* margin:0 auto on a flex item centers it; width:fit-content sizes to content */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "clamp(18px,5vw,28px)", width: "fit-content", marginLeft: "auto", marginRight: "auto" }}>
         {[
           {
             bg: "rgba(124,58,237,.12)", border: "rgba(124,58,237,.25)",
@@ -65,8 +67,6 @@ export default function Splash() {
             key={i}
             style={{
               display: "flex", alignItems: "center", gap: "clamp(12px,3.5vw,18px)",
-              width: "100%", maxWidth: 360,
-              marginBottom: i < 2 ? "clamp(18px,5vw,28px)" : 0,
             }}
           >
             <div style={{
@@ -84,6 +84,7 @@ export default function Splash() {
             </div>
           </div>
         ))}
+        </div>
       </div>
 
       {/* BOTTOM — buttons pinned to bottom */}
