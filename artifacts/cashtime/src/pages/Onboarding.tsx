@@ -12,8 +12,14 @@ const niches = [
 
 export default function Onboarding() {
   const [, navigate] = useLocation();
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState<number[]>([]);
   const user = getStoredUser();
+
+  function toggle(i: number) {
+    setSelected((prev) =>
+      prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
+    );
+  }
 
   return (
     <div className="screen" style={{ paddingBottom: 80 }}>
@@ -36,40 +42,54 @@ export default function Onboarding() {
         </div>
       )}
 
-      <div style={{ padding: "4px var(--hpad) 18px" }}>
-        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(17px,5vw,21px)", fontWeight: 700, lineHeight: 1.3, marginBottom: 6 }}>
+      <div style={{ padding: "4px var(--hpad) 6px" }}>
+        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(17px,5vw,21px)", fontWeight: 700, lineHeight: 1.3, marginBottom: 4 }}>
           Qual é o seu perfil?
         </div>
-        <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#7E7A9A", lineHeight: 1.5 }}>
-          Isso nos ajuda a mostrar as tarefas certas para você.
+        <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#7E7A9A", lineHeight: 1.5, marginBottom: 4 }}>
+          Escolha <strong style={{ color: "#C4B5FD" }}>uma ou mais</strong> áreas de interesse.
         </div>
       </div>
 
-      {niches.map((n, i) => (
-        <div
-          key={i}
-          className={`quiz-option ${selected === i ? "selected" : ""}`}
-          onClick={() => setSelected(i)}
-        >
-          <div className="quiz-option-check">
-            {selected === i && (
-              <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
-                <path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
-            )}
-          </div>
-          <div>
-            <div className="quiz-option-text" style={{ fontWeight: selected === i ? 500 : 400, fontSize: "clamp(13px,3.5vw,15px)" }}>
-              {n.icon} {n.title}
+      {niches.map((n, i) => {
+        const on = selected.includes(i);
+        return (
+          <div
+            key={i}
+            className={`quiz-option ${on ? "selected" : ""}`}
+            onClick={() => toggle(i)}
+          >
+            <div className="quiz-option-check">
+              {on && (
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
+                  <path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                </svg>
+              )}
             </div>
-            <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#7E7A9A", marginTop: 2 }}>{n.sub}</div>
+            <div>
+              <div className="quiz-option-text" style={{ fontWeight: on ? 500 : 400, fontSize: "clamp(13px,3.5vw,15px)" }}>
+                {n.icon} {n.title}
+              </div>
+              <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#7E7A9A", marginTop: 2 }}>{n.sub}</div>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       <div style={{ padding: "16px var(--hpad) 0" }}>
-        <button className="btn btn-primary" onClick={() => navigate("/home")}>
-          Continuar →
+        {selected.length === 0 && (
+          <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#7E7A9A", textAlign: "center", marginBottom: 10 }}>
+            Selecione ao menos uma área para continuar
+          </div>
+        )}
+        <button
+          className="btn btn-primary"
+          onClick={() => selected.length > 0 && navigate("/home")}
+          style={{ opacity: selected.length === 0 ? 0.4 : 1, cursor: selected.length === 0 ? "not-allowed" : "pointer" }}
+        >
+          {selected.length === 0
+            ? "Selecione uma área →"
+            : `Continuar com ${selected.length} área${selected.length > 1 ? "s" : ""} →`}
         </button>
       </div>
     </div>
