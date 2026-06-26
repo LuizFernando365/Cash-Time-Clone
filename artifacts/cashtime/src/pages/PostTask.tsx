@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { api } from "@/lib/api";
 import { getStoredUser } from "@/lib/auth";
@@ -25,8 +25,37 @@ export default function PostTask() {
   const [location, setLocation] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [coords, setCoords] = useState<{ lat: string; lng: string } | null>(null);
+  const [geoStatus, setGeoStatus] = useState<"idle" | "loading" | "ok" | "denied">("idle");
 
   const cat = CATEGORIES[categoryIdx];
+
+  // Auto-detect location when switching to presencial
+  useEffect(() => {
+    if (serviceType === "presencial" && geoStatus === "idle") {
+      captureLocation();
+    }
+  }, [serviceType]);
+
+  function captureLocation() {
+    if (!navigator.geolocation) {
+      setGeoStatus("denied");
+      return;
+    }
+    setGeoStatus("loading");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude.toFixed(6);
+        const lng = pos.coords.longitude.toFixed(6);
+        setCoords({ lat, lng });
+        setGeoStatus("ok");
+      },
+      () => {
+        setGeoStatus("denied");
+      },
+      { timeout: 8000 }
+    );
+  }
 
   async function handleSubmit() {
     if (!title.trim() || !desc.trim() || !value) {
@@ -47,8 +76,12 @@ export default function PostTask() {
         categoryEmoji: cat.emoji,
         price: Math.round(parseFloat(value.replace(",", ".")) * 100) / 100,
         estimatedTime: TIME_OPTIONS[timeIdx],
-        location: serviceType === "remoto" ? "🌐 Remoto · sem localização" : (location.trim() || "Local não informado"),
+        location: serviceType === "remoto"
+          ? "🌐 Remoto · sem localização"
+          : (location.trim() || "Local informado via GPS"),
         isRemote: serviceType === "remoto",
+        lat: serviceType === "presencial" && coords ? coords.lat : undefined,
+        lng: serviceType === "presencial" && coords ? coords.lng : undefined,
         tags: [],
         creatorId: user.id,
       });
@@ -145,13 +178,40 @@ export default function PostTask() {
 
       {serviceType === "presencial" && (
         <div style={{ margin: "0 var(--hpad) 12px" }}>
-          <div className="input-label">Localização</div>
+          <div className="input-label">Localização (descrição)</div>
           <input
             className="input-field"
-            placeholder="Ex: 1.2 km · Centro de Apucarana"
+            placeholder="Ex: Centro de Apucarana, próximo à praça..."
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
+          {/* GPS status */}
+          <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 8 }}>
+            {geoStatus === "loading" && (
+              <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#7E7A9A" }}>
+                📡 Obtendo sua localização GPS...
+              </div>
+            )}
+            {geoStatus === "ok" && coords && (
+              <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#34D399", display: "flex", alignItems: "center", gap: 6 }}>
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
+                  <path d="M20 6L9 17l-5-5" stroke="#34D399" strokeWidth="2.5" strokeLinecap="round" />
+                </svg>
+                GPS capturado — tarefa aparecerá no mapa
+              </div>
+            )}
+            {geoStatus === "denied" && (
+              <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#FBBF24" }}>
+                ⚠️ GPS não disponível — tarefa não aparecerá no mapa
+                <span
+                  style={{ marginLeft: 8, color: "#9F67FF", cursor: "pointer", textDecoration: "underline" }}
+                  onClick={captureLocation}
+                >
+                  Tentar novamente
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
