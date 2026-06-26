@@ -26,6 +26,9 @@ export const api = {
   login: (email: string, password: string) =>
     req<{ token: string; user: User }>("POST", "/auth/login", { email, password }),
 
+  register: (name: string, email: string, password: string) =>
+    req<{ token: string; user: User }>("POST", "/auth/register", { name, email, password }),
+
   me: () => req<User>("GET", "/auth/me"),
 
   listTasks: (params?: { category?: string; status?: string }) => {

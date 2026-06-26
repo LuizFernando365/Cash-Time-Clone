@@ -1,16 +1,7 @@
-import { useEffect } from "react";
 import { useLocation } from "wouter";
-import { api } from "@/lib/api";
-import { saveSession } from "@/lib/auth";
 
 export default function Splash() {
   const [, navigate] = useLocation();
-
-  useEffect(() => {
-    api.login("adm", "123").then(({ token, user }) => {
-      saveSession(token, user);
-    }).catch(() => {});
-  }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100dvh", background: "var(--bg)" }}>
@@ -98,10 +89,10 @@ export default function Splash() {
 
       {/* BOTTOM — buttons pinned to bottom */}
       <div style={{ padding: "0 var(--hpad) clamp(28px,8vw,44px)", display: "flex", flexDirection: "column", gap: 10 }}>
-        <button className="btn btn-primary" onClick={() => navigate("/onboarding")}>
+        <button className="btn btn-primary" onClick={() => navigate("/register")}>
           Criar conta grátis
         </button>
-        <button className="btn btn-ghost" onClick={() => navigate("/home")}>
+        <button className="btn btn-ghost" onClick={() => navigate("/login")}>
           Já tenho conta
         </button>
       </div>

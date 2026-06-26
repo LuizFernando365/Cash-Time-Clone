@@ -27,9 +27,11 @@ export default function Home() {
     api.listTasks({ status: "open" }).then(setTasks).catch(console.error).finally(() => setLoading(false));
   }, []);
 
+  const othersOnly = tasks.filter((t) => t.creatorId !== user?.id);
+
   const filtered = activeFilter === 0
-    ? tasks
-    : tasks.filter((t) => t.category === filters[activeFilter]);
+    ? othersOnly
+    : othersOnly.filter((t) => t.category === filters[activeFilter]);
 
   return (
     <>

@@ -1,5 +1,7 @@
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import Splash from "@/pages/Splash";
+import Register from "@/pages/Register";
+import Login from "@/pages/Login";
 import Onboarding from "@/pages/Onboarding";
 import Home from "@/pages/Home";
 import TaskDetail from "@/pages/TaskDetail";
@@ -17,6 +19,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Splash} />
+      <Route path="/register" component={Register} />
+      <Route path="/login" component={Login} />
       <Route path="/onboarding" component={Onboarding} />
       <Route path="/home" component={Home} />
       <Route path="/task/:id" component={TaskDetail} />

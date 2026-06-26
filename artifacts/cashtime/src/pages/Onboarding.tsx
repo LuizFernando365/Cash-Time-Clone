@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { getStoredUser } from "@/lib/auth";
 
 const niches = [
   { icon: "💻", title: "Tecnologia & Design", sub: "Dev, UI/UX, suporte técnico" },
@@ -12,11 +13,12 @@ const niches = [
 export default function Onboarding() {
   const [, navigate] = useLocation();
   const [selected, setSelected] = useState(0);
+  const user = getStoredUser();
 
   return (
     <div className="screen" style={{ paddingBottom: 80 }}>
       <div style={{ padding: "16px var(--hpad) 8px", display: "flex", alignItems: "center", gap: 10 }}>
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" onClick={() => navigate("/register")} style={{ cursor: "pointer" }}>
           <path d="M19 12H5M12 5l-7 7 7 7" stroke="#7E7A9A" strokeWidth="2" strokeLinecap="round" />
         </svg>
         <span style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A" }}>Passo 2 de 3</span>
@@ -26,7 +28,15 @@ export default function Onboarding() {
         <div className="progress-fill" style={{ width: "66%" }} />
       </div>
 
-      <div style={{ padding: "0 var(--hpad) 18px" }}>
+      {user && (
+        <div style={{ padding: "0 var(--hpad) 6px" }}>
+          <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#7E7A9A" }}>
+            Olá, <strong style={{ color: "#C4B5FD" }}>{user.name.split(" ")[0]}</strong>! Quase pronto 🎉
+          </div>
+        </div>
+      )}
+
+      <div style={{ padding: "4px var(--hpad) 18px" }}>
         <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(17px,5vw,21px)", fontWeight: 700, lineHeight: 1.3, marginBottom: 6 }}>
           Qual é o seu perfil?
         </div>
@@ -59,7 +69,7 @@ export default function Onboarding() {
 
       <div style={{ padding: "16px var(--hpad) 0" }}>
         <button className="btn btn-primary" onClick={() => navigate("/home")}>
-          Continuar
+          Continuar →
         </button>
       </div>
     </div>
