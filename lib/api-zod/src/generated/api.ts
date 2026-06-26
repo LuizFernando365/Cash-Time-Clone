@@ -8,9 +8,352 @@
 import * as zod from "zod";
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * @summary Login with email and password
+ */
+export const LoginBody = zod.object({
+  email: zod.string(),
+  password: zod.string(),
+});
+
+export const LoginResponse = zod.object({
+  token: zod.string(),
+  user: zod.object({
+    id: zod.string(),
+    name: zod.string(),
+    email: zod.string(),
+    avatarInitials: zod.string(),
+    avatarBg: zod.string(),
+    avatarColor: zod.string(),
+    bio: zod.string().nullish(),
+    city: zod.string().nullish(),
+    plan: zod.string(),
+    rankLevel: zod.number(),
+    rankPoints: zod.number(),
+    tasksCompleted: zod.number(),
+    totalEarned: zod.number(),
+    createdAt: zod.coerce.date(),
+  }),
+});
+
+/**
+ * @summary Get current user
+ */
+export const GetMeResponse = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  email: zod.string(),
+  avatarInitials: zod.string(),
+  avatarBg: zod.string(),
+  avatarColor: zod.string(),
+  bio: zod.string().nullish(),
+  city: zod.string().nullish(),
+  plan: zod.string(),
+  rankLevel: zod.number(),
+  rankPoints: zod.number(),
+  tasksCompleted: zod.number(),
+  totalEarned: zod.number(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary List all open tasks
+ */
+export const ListTasksQueryParams = zod.object({
+  category: zod.coerce.string().optional(),
+  status: zod.coerce.string().optional(),
+});
+
+export const ListTasksResponseItem = zod
+  .object({
+    id: zod.string(),
+    title: zod.string(),
+    description: zod.string(),
+    category: zod.string(),
+    categoryEmoji: zod.string(),
+    price: zod.number(),
+    estimatedTime: zod.string(),
+    location: zod.string(),
+    isRemote: zod.boolean(),
+    lat: zod.string().nullish(),
+    lng: zod.string().nullish(),
+    tags: zod.array(zod.string()),
+    status: zod.string(),
+    highlight: zod.boolean(),
+    creatorId: zod.string(),
+    executorId: zod.string().nullish(),
+    createdAt: zod.coerce.date(),
+    updatedAt: zod.coerce.date(),
+  })
+  .and(
+    zod.object({
+      creator: zod.object({
+        id: zod.string(),
+        name: zod.string(),
+        email: zod.string(),
+        avatarInitials: zod.string(),
+        avatarBg: zod.string(),
+        avatarColor: zod.string(),
+        bio: zod.string().nullish(),
+        city: zod.string().nullish(),
+        plan: zod.string(),
+        rankLevel: zod.number(),
+        rankPoints: zod.number(),
+        tasksCompleted: zod.number(),
+        totalEarned: zod.number(),
+        createdAt: zod.coerce.date(),
+      }),
+    }),
+  );
+export const ListTasksResponse = zod.array(ListTasksResponseItem);
+
+/**
+ * @summary Create a new task
+ */
+export const CreateTaskBody = zod.object({
+  title: zod.string(),
+  description: zod.string(),
+  category: zod.string(),
+  categoryEmoji: zod.string().optional(),
+  price: zod.number(),
+  estimatedTime: zod.string(),
+  location: zod.string(),
+  isRemote: zod.boolean(),
+  lat: zod.string().optional(),
+  lng: zod.string().optional(),
+  tags: zod.array(zod.string()).optional(),
+  creatorId: zod.string(),
+});
+
+/**
+ * @summary Get a task by ID
+ */
+export const GetTaskParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const GetTaskResponse = zod
+  .object({
+    id: zod.string(),
+    title: zod.string(),
+    description: zod.string(),
+    category: zod.string(),
+    categoryEmoji: zod.string(),
+    price: zod.number(),
+    estimatedTime: zod.string(),
+    location: zod.string(),
+    isRemote: zod.boolean(),
+    lat: zod.string().nullish(),
+    lng: zod.string().nullish(),
+    tags: zod.array(zod.string()),
+    status: zod.string(),
+    highlight: zod.boolean(),
+    creatorId: zod.string(),
+    executorId: zod.string().nullish(),
+    createdAt: zod.coerce.date(),
+    updatedAt: zod.coerce.date(),
+  })
+  .and(
+    zod.object({
+      creator: zod.object({
+        id: zod.string(),
+        name: zod.string(),
+        email: zod.string(),
+        avatarInitials: zod.string(),
+        avatarBg: zod.string(),
+        avatarColor: zod.string(),
+        bio: zod.string().nullish(),
+        city: zod.string().nullish(),
+        plan: zod.string(),
+        rankLevel: zod.number(),
+        rankPoints: zod.number(),
+        tasksCompleted: zod.number(),
+        totalEarned: zod.number(),
+        createdAt: zod.coerce.date(),
+      }),
+    }),
+  );
+
+/**
+ * @summary Update task status or executor
+ */
+export const UpdateTaskParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const UpdateTaskBody = zod.object({
+  status: zod.string().optional(),
+  executorId: zod.string().optional(),
+  highlight: zod.boolean().optional(),
+});
+
+export const UpdateTaskResponse = zod.object({
+  id: zod.string(),
+  title: zod.string(),
+  description: zod.string(),
+  category: zod.string(),
+  categoryEmoji: zod.string(),
+  price: zod.number(),
+  estimatedTime: zod.string(),
+  location: zod.string(),
+  isRemote: zod.boolean(),
+  lat: zod.string().nullish(),
+  lng: zod.string().nullish(),
+  tags: zod.array(zod.string()),
+  status: zod.string(),
+  highlight: zod.boolean(),
+  creatorId: zod.string(),
+  executorId: zod.string().nullish(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary List conversations for current user
+ */
+export const ListConversationsResponseItem = zod
+  .object({
+    id: zod.string(),
+    taskId: zod.string().nullish(),
+    participantA: zod.string(),
+    participantB: zod.string(),
+    lastMessage: zod.string().nullish(),
+    lastMessageAt: zod.coerce.date().nullish(),
+    createdAt: zod.coerce.date(),
+  })
+  .and(
+    zod.object({
+      otherUser: zod.object({
+        id: zod.string(),
+        name: zod.string(),
+        email: zod.string(),
+        avatarInitials: zod.string(),
+        avatarBg: zod.string(),
+        avatarColor: zod.string(),
+        bio: zod.string().nullish(),
+        city: zod.string().nullish(),
+        plan: zod.string(),
+        rankLevel: zod.number(),
+        rankPoints: zod.number(),
+        tasksCompleted: zod.number(),
+        totalEarned: zod.number(),
+        createdAt: zod.coerce.date(),
+      }),
+      unreadCount: zod.number(),
+    }),
+  );
+export const ListConversationsResponse = zod.array(
+  ListConversationsResponseItem,
+);
+
+/**
+ * @summary Start a conversation
+ */
+export const CreateConversationBody = zod.object({
+  otherUserId: zod.string(),
+  taskId: zod.string().optional(),
+});
+
+/**
+ * @summary Get messages in a conversation
+ */
+export const ListMessagesParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const ListMessagesResponseItem = zod.object({
+  id: zod.string(),
+  conversationId: zod.string(),
+  senderId: zod.string(),
+  content: zod.string(),
+  read: zod.boolean(),
+  createdAt: zod.coerce.date(),
+});
+export const ListMessagesResponse = zod.array(ListMessagesResponseItem);
+
+/**
+ * @summary Send a message
+ */
+export const SendMessageParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const SendMessageBody = zod.object({
+  senderId: zod.string(),
+  content: zod.string(),
+});
+
+/**
+ * @summary Get user profile
+ */
+export const GetUserParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const GetUserResponse = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  email: zod.string(),
+  avatarInitials: zod.string(),
+  avatarBg: zod.string(),
+  avatarColor: zod.string(),
+  bio: zod.string().nullish(),
+  city: zod.string().nullish(),
+  plan: zod.string(),
+  rankLevel: zod.number(),
+  rankPoints: zod.number(),
+  tasksCompleted: zod.number(),
+  totalEarned: zod.number(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Get tasks created or executed by user
+ */
+export const GetUserTasksParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const GetUserTasksResponseItem = zod.object({
+  id: zod.string(),
+  title: zod.string(),
+  description: zod.string(),
+  category: zod.string(),
+  categoryEmoji: zod.string(),
+  price: zod.number(),
+  estimatedTime: zod.string(),
+  location: zod.string(),
+  isRemote: zod.boolean(),
+  lat: zod.string().nullish(),
+  lng: zod.string().nullish(),
+  tags: zod.array(zod.string()),
+  status: zod.string(),
+  highlight: zod.boolean(),
+  creatorId: zod.string(),
+  executorId: zod.string().nullish(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+export const GetUserTasksResponse = zod.array(GetUserTasksResponseItem);
+
+/**
+ * @summary Get user ranking
+ */
+export const GetRankingResponseItem = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  avatarInitials: zod.string(),
+  avatarBg: zod.string(),
+  avatarColor: zod.string(),
+  rankLevel: zod.number(),
+  rankPoints: zod.number(),
+  tasksCompleted: zod.number(),
+  totalEarned: zod.number(),
+});
+export const GetRankingResponse = zod.array(GetRankingResponseItem);

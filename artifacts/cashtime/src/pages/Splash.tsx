@@ -1,7 +1,16 @@
+import { useEffect } from "react";
 import { useLocation } from "wouter";
+import { api } from "@/lib/api";
+import { saveSession } from "@/lib/auth";
 
 export default function Splash() {
   const [, navigate] = useLocation();
+
+  useEffect(() => {
+    api.login("adm", "123").then(({ token, user }) => {
+      saveSession(token, user);
+    }).catch(() => {});
+  }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100dvh", background: "var(--bg)" }}>

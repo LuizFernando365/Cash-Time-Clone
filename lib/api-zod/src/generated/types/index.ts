@@ -6,4 +6,19 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./authResponse";
+export * from "./conversation";
+export * from "./conversationWithUser";
+export * from "./createConversationRequest";
+export * from "./createTaskRequest";
+export * from "./errorResponse";
 export * from "./healthStatus";
+export * from "./listTasksParams";
+export * from "./loginRequest";
+export * from "./message";
+export * from "./rankingEntry";
+export * from "./sendMessageRequest";
+export * from "./task";
+export * from "./taskWithCreator";
+export * from "./updateTaskRequest";
+export * from "./user";

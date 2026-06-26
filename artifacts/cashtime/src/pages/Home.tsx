@@ -1,70 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import BottomNav from "@/components/BottomNav";
+import { api, type TaskWithCreator } from "@/lib/api";
+import { getStoredUser } from "@/lib/auth";
 
-const tasks = [
-  {
-    id: 1,
-    highlight: true,
-    category: "💻 Tech",
-    categoryClass: "pill-green",
-    title: "Ajuda para configurar roteador wi-fi e resolver queda de sinal",
-    location: "1.2 km · Apucarana",
-    tags: ["Redes", "Wi-Fi", "Roteador"],
-    price: "R$65",
-    time: "até 1h",
-    author: "MA",
-    authorName: "Marcos Alves",
-    authorBg: "rgba(124,58,237,.2)",
-    authorColor: "#A78BFA",
-    rank: "🏆 Nível 4",
-    rankStyle: {},
-    ago: null,
-  },
-  {
-    id: 2,
-    highlight: false,
-    category: "📦 Entrega",
-    categoryClass: "pill-gray",
-    title: "Buscar encomenda nos Correios e entregar em endereço próximo",
-    location: "0.8 km · Centro",
-    tags: [],
-    price: "R$30",
-    time: "~45 min",
-    author: "CS",
-    authorName: "Carla Souza",
-    authorBg: "rgba(52,211,153,.12)",
-    authorColor: "#34D399",
-    rank: "🥈 Nível 2",
-    rankStyle: { background: "rgba(167,139,250,.1)", borderColor: "rgba(167,139,250,.2)", color: "#C4B5FD" },
-    ago: "há 12 min",
-  },
-  {
-    id: 3,
-    highlight: false,
-    category: "🎨 Criativo",
-    categoryClass: "",
-    categoryCustomStyle: { background: "rgba(251,191,36,.1)", color: "#FCD34D", borderColor: "rgba(251,191,36,.25)" },
-    title: "Editar 3 fotos de produto para loja do Instagram",
-    location: "🌐 Remoto · sem localização",
-    tags: [],
-    price: "R$50",
-    time: "~1h30",
-    author: "RF",
-    authorName: "Rafael F.",
-    authorBg: "rgba(251,191,36,.12)",
-    authorColor: "#FCD34D",
-    rank: "🥇 Nível 5",
-    rankStyle: {},
-    ago: "há 1h",
-  },
-];
+const filters = ["Todos", "Tech", "Entrega", "Casa", "Admin", "Criativo"];
 
-const filters = ["Todos", "💻 Tech", "📦 Entrega", "🏠 Casa", "📝 Admin"];
+function timeAgo(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "agora";
+  if (min < 60) return `há ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `há ${h}h`;
+  return `há ${Math.floor(h / 24)}d`;
+}
 
 export default function Home() {
   const [, navigate] = useLocation();
   const [activeFilter, setActiveFilter] = useState(0);
+  const [tasks, setTasks] = useState<TaskWithCreator[]>([]);
+  const [loading, setLoading] = useState(true);
+  const user = getStoredUser();
+
+  useEffect(() => {
+    api.listTasks({ status: "open" }).then(setTasks).catch(console.error).finally(() => setLoading(false));
+  }, []);
+
+  const filtered = activeFilter === 0
+    ? tasks
+    : tasks.filter((t) => t.category === filters[activeFilter]);
 
   return (
     <>
@@ -87,7 +52,9 @@ export default function Home() {
         </div>
 
         <div style={{ padding: "12px var(--hpad) 4px" }}>
-          <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A" }}>Olá, <strong style={{ color: "#C4B5FD" }}>Luiz</strong> 👋</div>
+          <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A" }}>
+            Olá, <strong style={{ color: "#C4B5FD" }}>{user?.name.split(" ")[0] ?? "Usuário"}</strong> 👋
+          </div>
           <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(15px,4.5vw,19px)", fontWeight: 700, marginTop: 2 }}>Tarefas para você</div>
         </div>
 
@@ -102,12 +69,23 @@ export default function Home() {
         <div className="filter-chips">
           {filters.map((f, i) => (
             <div key={i} className={`chip ${activeFilter === i ? "active" : ""}`} onClick={() => setActiveFilter(i)}>
-              {f}
+              {i === 0 ? f : `${["💻","📦","🏠","📝","🎨"][i - 1]} ${f}`}
             </div>
           ))}
         </div>
 
-        {tasks.map((task) => (
+        {loading && (
+          <div style={{ textAlign: "center", padding: "40px 0", color: "#7E7A9A" }}>Carregando tarefas...</div>
+        )}
+
+        {!loading && filtered.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px var(--hpad)", color: "#7E7A9A" }}>
+            <div style={{ fontSize: 32, marginBottom: 8 }}>📭</div>
+            <div>Nenhuma tarefa encontrada</div>
+          </div>
+        )}
+
+        {filtered.map((task) => (
           <div
             key={task.id}
             className={`card ${task.highlight ? "card-highlight" : ""}`}
@@ -118,12 +96,12 @@ export default function Home() {
               {task.highlight ? (
                 <>
                   <span className="pill" style={{ fontSize: 10 }}>⭐ Destaque</span>
-                  <span className={`pill ${task.categoryClass}`}>{task.category}</span>
+                  <span className="pill pill-green">{task.categoryEmoji} {task.category}</span>
                 </>
               ) : (
                 <>
-                  <span className={`pill ${task.categoryClass}`} style={(task as any).categoryCustomStyle}>{task.category}</span>
-                  {task.ago && <span style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>{task.ago}</span>}
+                  <span className="pill">{task.categoryEmoji} {task.category}</span>
+                  <span style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>{timeAgo(task.createdAt)}</span>
                 </>
               )}
             </div>
@@ -132,7 +110,7 @@ export default function Home() {
               <div style={{ flex: 1 }}>
                 <div className="card-title">{task.title}</div>
                 <div className="card-meta">
-                  {!task.location.startsWith("🌐") && (
+                  {!task.isRemote && (
                     <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
                       <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="currentColor" strokeWidth="1.8" />
                       <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="1.8" />
@@ -147,8 +125,8 @@ export default function Home() {
                 )}
               </div>
               <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 8 }}>
-                <div className="card-price">{task.price}</div>
-                <span className="card-price-sub">{task.time}</span>
+                <div className="card-price">R${task.price}</div>
+                <span className="card-price-sub">{task.estimatedTime}</span>
               </div>
             </div>
 
@@ -156,10 +134,14 @@ export default function Home() {
 
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                <div className="avatar" style={{ background: task.authorBg, color: task.authorColor }}>{task.author}</div>
+                <div className="avatar" style={{ background: task.creator.avatarBg, color: task.creator.avatarColor }}>
+                  {task.creator.avatarInitials}
+                </div>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: "clamp(11px,3vw,13px)", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{task.authorName}</div>
-                  <div className="rank-badge" style={task.rankStyle}>{task.rank}</div>
+                  <div style={{ fontSize: "clamp(11px,3vw,13px)", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {task.creator.name}
+                  </div>
+                  <div className="rank-badge">Nv{task.creator.rankLevel}</div>
                 </div>
               </div>
               <button

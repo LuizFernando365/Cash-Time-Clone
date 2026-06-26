@@ -10,13 +10,21 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: tasks
+    description: Task management
+  - name: messages
+    description: Messaging
+  - name: users
+    description: User profiles
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +32,265 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /tasks:
+    get:
+      operationId: listTasks
+      tags: [tasks]
+      summary: List all open tasks
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskWithCreator"
+    post:
+      operationId: createTask
+      tags: [tasks]
+      summary: Create a new task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskRequest"
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /tasks/{id}:
+    get:
+      operationId: getTask
+      tags: [tasks]
+      summary: Get a task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskWithCreator"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateTask
+      tags: [tasks]
+      summary: Update task status or executor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskRequest"
+      responses:
+        "200":
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /conversations:
+    get:
+      operationId: listConversations
+      tags: [messages]
+      summary: List conversations for current user
+      responses:
+        "200":
+          description: Conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConversationWithUser"
+    post:
+      operationId: createConversation
+      tags: [messages]
+      summary: Start a conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateConversationRequest"
+      responses:
+        "201":
+          description: Conversation created or existing returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /conversations/{id}/messages:
+    get:
+      operationId: listMessages
+      tags: [messages]
+      summary: Get messages in a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+    post:
+      operationId: sendMessage
+      tags: [messages]
+      summary: Send a message
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendMessageRequest"
+      responses:
+        "201":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get user profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}/tasks:
+    get:
+      operationId: getUserTasks
+      tags: [users]
+      summary: Get tasks created or executed by user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+
+  /ranking:
+    get:
+      operationId: getRanking
+      tags: [users]
+      summary: Get user ranking
+      responses:
+        "200":
+          description: Ranking list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RankingEntry"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +298,257 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required: [token, user]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        avatarInitials:
+          type: string
+        avatarBg:
+          type: string
+        avatarColor:
+          type: string
+        bio:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        plan:
+          type: string
+        rankLevel:
+          type: integer
+        rankPoints:
+          type: integer
+        tasksCompleted:
+          type: integer
+        totalEarned:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, name, email, avatarInitials, avatarBg, avatarColor, plan, rankLevel, rankPoints, tasksCompleted, totalEarned, createdAt]
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        categoryEmoji:
+          type: string
+        price:
+          type: integer
+        estimatedTime:
+          type: string
+        location:
+          type: string
+        isRemote:
+          type: boolean
+        lat:
+          type: string
+          nullable: true
+        lng:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        highlight:
+          type: boolean
+        creatorId:
+          type: string
+        executorId:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, title, description, category, categoryEmoji, price, estimatedTime, location, isRemote, tags, status, highlight, creatorId, createdAt, updatedAt]
+
+    TaskWithCreator:
+      allOf:
+        - $ref: "#/components/schemas/Task"
+        - type: object
+          properties:
+            creator:
+              $ref: "#/components/schemas/User"
+          required: [creator]
+
+    CreateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        categoryEmoji:
+          type: string
+        price:
+          type: integer
+        estimatedTime:
+          type: string
+        location:
+          type: string
+        isRemote:
+          type: boolean
+        lat:
+          type: string
+        lng:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        creatorId:
+          type: string
+      required: [title, description, category, price, estimatedTime, location, isRemote, creatorId]
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        status:
+          type: string
+        executorId:
+          type: string
+        highlight:
+          type: boolean
+
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+        taskId:
+          type: string
+          nullable: true
+        participantA:
+          type: string
+        participantB:
+          type: string
+        lastMessage:
+          type: string
+          nullable: true
+        lastMessageAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, participantA, participantB, createdAt]
+
+    ConversationWithUser:
+      allOf:
+        - $ref: "#/components/schemas/Conversation"
+        - type: object
+          properties:
+            otherUser:
+              $ref: "#/components/schemas/User"
+            unreadCount:
+              type: integer
+          required: [otherUser, unreadCount]
+
+    CreateConversationRequest:
+      type: object
+      properties:
+        otherUserId:
+          type: string
+        taskId:
+          type: string
+      required: [otherUserId]
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        conversationId:
+          type: string
+        senderId:
+          type: string
+        content:
+          type: string
+        read:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, conversationId, senderId, content, read, createdAt]
+
+    SendMessageRequest:
+      type: object
+      properties:
+        senderId:
+          type: string
+        content:
+          type: string
+      required: [senderId, content]
+
+    RankingEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        avatarInitials:
+          type: string
+        avatarBg:
+          type: string
+        avatarColor:
+          type: string
+        rankLevel:
+          type: integer
+        rankPoints:
+          type: integer
+        tasksCompleted:
+          type: integer
+        totalEarned:
+          type: integer
+      required: [id, name, avatarInitials, avatarBg, avatarColor, rankLevel, rankPoints, tasksCompleted, totalEarned]

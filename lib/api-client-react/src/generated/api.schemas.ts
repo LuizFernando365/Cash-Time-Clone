@@ -8,3 +8,131 @@
 export interface HealthStatus {
   status: string;
 }
+
+export interface ErrorResponse {
+  error: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatarInitials: string;
+  avatarBg: string;
+  avatarColor: string;
+  bio?: string | null;
+  city?: string | null;
+  plan: string;
+  rankLevel: number;
+  rankPoints: number;
+  tasksCompleted: number;
+  totalEarned: number;
+  createdAt: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  categoryEmoji: string;
+  price: number;
+  estimatedTime: string;
+  location: string;
+  isRemote: boolean;
+  lat?: string | null;
+  lng?: string | null;
+  tags: string[];
+  status: string;
+  highlight: boolean;
+  creatorId: string;
+  executorId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type TaskWithCreator = Task & {
+  creator: User;
+};
+
+export interface CreateTaskRequest {
+  title: string;
+  description: string;
+  category: string;
+  categoryEmoji?: string;
+  price: number;
+  estimatedTime: string;
+  location: string;
+  isRemote: boolean;
+  lat?: string;
+  lng?: string;
+  tags?: string[];
+  creatorId: string;
+}
+
+export interface UpdateTaskRequest {
+  status?: string;
+  executorId?: string;
+  highlight?: boolean;
+}
+
+export interface Conversation {
+  id: string;
+  taskId?: string | null;
+  participantA: string;
+  participantB: string;
+  lastMessage?: string | null;
+  lastMessageAt?: string | null;
+  createdAt: string;
+}
+
+export type ConversationWithUser = Conversation & {
+  otherUser: User;
+  unreadCount: number;
+};
+
+export interface CreateConversationRequest {
+  otherUserId: string;
+  taskId?: string;
+}
+
+export interface Message {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  content: string;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface SendMessageRequest {
+  senderId: string;
+  content: string;
+}
+
+export interface RankingEntry {
+  id: string;
+  name: string;
+  avatarInitials: string;
+  avatarBg: string;
+  avatarColor: string;
+  rankLevel: number;
+  rankPoints: number;
+  tasksCompleted: number;
+  totalEarned: number;
+}
+
+export type ListTasksParams = {
+  category?: string;
+  status?: string;
+};

@@ -1,50 +1,27 @@
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import BottomNav from "@/components/BottomNav";
+import { api, type ConversationWithUser } from "@/lib/api";
 
-const conversations = [
-  {
-    id: "marcos",
-    initials: "MA",
-    name: "Marcos Alves",
-    lastMsg: "Ótimo! Pode vir às 14h hoje?",
-    task: "💻 Configurar roteador · R$65",
-    time: "agora",
-    unread: 2,
-    online: true,
-    bg: "rgba(124,58,237,.2)",
-    color: "#A78BFA",
-    opacity: 1,
-  },
-  {
-    id: "rafael",
-    initials: "RF",
-    name: "Rafael F.",
-    lastMsg: "Você: Tudo certo, mandei no e-mail!",
-    task: "🎨 Editar fotos · R$50",
-    time: "1h",
-    unread: 0,
-    online: false,
-    bg: "rgba(52,211,153,.12)",
-    color: "#34D399",
-    opacity: 0.7,
-  },
-  {
-    id: "carla",
-    initials: "CS",
-    name: "Carla Souza",
-    lastMsg: "Tarefa concluída ✅",
-    task: "📦 Entrega · R$30",
-    time: "ontem",
-    unread: 0,
-    online: false,
-    bg: "rgba(251,191,36,.1)",
-    color: "#FCD34D",
-    opacity: 0.5,
-  },
-];
+function timeAgo(iso?: string | null) {
+  if (!iso) return "";
+  const diff = Date.now() - new Date(iso).getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "agora";
+  if (min < 60) return `${min}min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `${h}h`;
+  return "ontem";
+}
 
 export default function Messages() {
   const [, navigate] = useLocation();
+  const [convs, setConvs] = useState<ConversationWithUser[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.listConversations().then(setConvs).catch(console.error).finally(() => setLoading(false));
+  }, []);
 
   return (
     <>
@@ -52,7 +29,9 @@ export default function Messages() {
         <div style={{ padding: "16px var(--hpad) 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(17px,5vw,21px)", fontWeight: 700 }}>Mensagens</div>
-            <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginTop: 2 }}>3 conversas ativas</div>
+            <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginTop: 2 }}>
+              {loading ? "..." : `${convs.length} conversa${convs.length !== 1 ? "s" : ""}`}
+            </div>
           </div>
         </div>
 
@@ -64,29 +43,40 @@ export default function Messages() {
           Buscar conversa...
         </div>
 
-        {conversations.map((c) => (
+        {loading && (
+          <div style={{ textAlign: "center", padding: "40px 0", color: "#7E7A9A" }}>Carregando...</div>
+        )}
+
+        {!loading && convs.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px var(--hpad)", color: "#7E7A9A" }}>
+            <div style={{ fontSize: 32, marginBottom: 8 }}>💬</div>
+            <div>Nenhuma conversa ainda</div>
+          </div>
+        )}
+
+        {convs.map((c) => (
           <div
             key={c.id}
-            style={{ padding: "12px var(--hpad)", display: "flex", alignItems: "center", gap: 12, borderBottom: "1px solid rgba(138,99,255,.1)", opacity: c.opacity, cursor: "pointer" }}
+            style={{ padding: "12px var(--hpad)", display: "flex", alignItems: "center", gap: 12, borderBottom: "1px solid rgba(138,99,255,.1)", cursor: "pointer" }}
             onClick={() => navigate(`/chat/${c.id}`)}
           >
             <div style={{ position: "relative" }}>
-              <div className="avatar" style={{ width: "clamp(40px,11vw,48px)", height: "clamp(40px,11vw,48px)", borderRadius: 16, background: c.bg, color: c.color, fontSize: "clamp(14px,4vw,18px)" }}>{c.initials}</div>
-              {c.online && (
-                <div style={{ width: 10, height: 10, background: "#34D399", borderRadius: "50%", border: "2px solid var(--bg)", position: "absolute", bottom: -1, right: -1 }} />
-              )}
+              <div className="avatar" style={{ width: "clamp(40px,11vw,48px)", height: "clamp(40px,11vw,48px)", borderRadius: 16, background: c.otherUser.avatarBg, color: c.otherUser.avatarColor, fontSize: "clamp(14px,4vw,18px)" }}>
+                {c.otherUser.avatarInitials}
+              </div>
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3 }}>
-                <div style={{ fontSize: "clamp(13px,3.5vw,15px)", fontWeight: 600 }}>{c.name}</div>
-                <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>{c.time}</div>
+                <div style={{ fontSize: "clamp(13px,3.5vw,15px)", fontWeight: 600 }}>{c.otherUser.name}</div>
+                <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>{timeAgo(c.lastMessageAt)}</div>
               </div>
-              <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.lastMsg}</div>
-              <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#9F67FF", marginTop: 3 }}>{c.task}</div>
+              <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {c.lastMessage ?? "Conversa iniciada"}
+              </div>
             </div>
-            {c.unread > 0 && (
+            {c.unreadCount > 0 && (
               <div style={{ width: 18, height: 18, background: "#7C3AED", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
-                {c.unread}
+                {c.unreadCount}
               </div>
             )}
           </div>

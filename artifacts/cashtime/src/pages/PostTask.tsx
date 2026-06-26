@@ -1,13 +1,64 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { api } from "@/lib/api";
+import { getStoredUser } from "@/lib/auth";
+
+const CATEGORIES = [
+  { emoji: "💻", label: "Tech" },
+  { emoji: "📦", label: "Entrega" },
+  { emoji: "🏠", label: "Casa" },
+  { emoji: "📝", label: "Admin" },
+  { emoji: "🎨", label: "Criativo" },
+];
+
+const TIME_OPTIONS = ["~30 min", "~45 min", "até 1h", "~1h30", "~2h"];
 
 export default function PostTask() {
   const [, navigate] = useLocation();
+  const user = getStoredUser();
   const [serviceType, setServiceType] = useState<"presencial" | "remoto">("presencial");
-  const [plan, setPlan] = useState<"avulso" | "mensal">("mensal");
+  const [categoryIdx, setCategoryIdx] = useState(0);
+  const [timeIdx, setTimeIdx] = useState(2);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [value, setValue] = useState("");
+  const [location, setLocation] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const cat = CATEGORIES[categoryIdx];
+
+  async function handleSubmit() {
+    if (!title.trim() || !desc.trim() || !value) {
+      setError("Preencha título, descrição e valor.");
+      return;
+    }
+    if (!user) {
+      setError("Faça login primeiro.");
+      return;
+    }
+    setSubmitting(true);
+    setError("");
+    try {
+      await api.createTask({
+        title: title.trim(),
+        description: desc.trim(),
+        category: cat.label,
+        categoryEmoji: cat.emoji,
+        price: Math.round(parseFloat(value.replace(",", ".")) * 100) / 100,
+        estimatedTime: TIME_OPTIONS[timeIdx],
+        location: serviceType === "remoto" ? "🌐 Remoto · sem localização" : (location.trim() || "Local não informado"),
+        isRemote: serviceType === "remoto",
+        tags: [],
+        creatorId: user.id,
+      });
+      navigate("/home");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Erro ao publicar");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div className="screen" style={{ paddingBottom: 90 }}>
@@ -43,99 +94,76 @@ export default function PostTask() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, margin: "0 var(--hpad) 12px" }}>
         <div>
           <div className="input-label">Valor (R$)</div>
-          <input className="input-field" placeholder="65,00" value={value} onChange={(e) => setValue(e.target.value)} />
+          <input className="input-field" placeholder="65,00" value={value} onChange={(e) => setValue(e.target.value)} inputMode="decimal" />
         </div>
         <div>
           <div className="input-label">Tempo estimado</div>
-          <div className="input-field" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#A78BFA", fontSize: "clamp(12px,3.3vw,14px)" }}>
-            1 hora
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-              <path d="M6 9l6 6 6-6" stroke="#A78BFA" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </div>
+          <select
+            className="input-field"
+            value={timeIdx}
+            onChange={(e) => setTimeIdx(Number(e.target.value))}
+            style={{ color: "#A78BFA", fontSize: "clamp(12px,3.3vw,14px)" }}
+          >
+            {TIME_OPTIONS.map((t, i) => <option key={i} value={i}>{t}</option>)}
+          </select>
         </div>
       </div>
 
       <div style={{ margin: "0 var(--hpad) 12px" }}>
-        <div className="input-label">Nicho / Categoria</div>
-        <div className="input-field" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#A78BFA", fontSize: "clamp(12px,3.3vw,14px)" }}>
-          💻 Tecnologia & Design
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-            <path d="M6 9l6 6 6-6" stroke="#A78BFA" strokeWidth="2" strokeLinecap="round" />
-          </svg>
+        <div className="input-label">Categoria</div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {CATEGORIES.map((c, i) => (
+            <div
+              key={i}
+              className={`chip ${categoryIdx === i ? "active" : ""}`}
+              onClick={() => setCategoryIdx(i)}
+            >
+              {c.emoji} {c.label}
+            </div>
+          ))}
         </div>
       </div>
 
       <div style={{ margin: "0 var(--hpad) 12px" }}>
         <div className="input-label">Tipo de serviço</div>
         <div style={{ display: "flex", gap: 8 }}>
-          <div
-            className={`quiz-option ${serviceType === "presencial" ? "selected" : ""}`}
-            style={{ flex: 1, margin: 0, padding: "11px 12px" }}
-            onClick={() => setServiceType("presencial")}
-          >
-            <div className="quiz-option-check">
-              {serviceType === "presencial" && <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>}
+          {(["presencial", "remoto"] as const).map((t) => (
+            <div
+              key={t}
+              className={`quiz-option ${serviceType === t ? "selected" : ""}`}
+              style={{ flex: 1, margin: 0, padding: "11px 12px" }}
+              onClick={() => setServiceType(t)}
+            >
+              <div className="quiz-option-check">
+                {serviceType === t && <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>}
+              </div>
+              <div style={{ fontSize: "clamp(12px,3.3vw,14px)" }}>{t === "presencial" ? "📍 Presencial" : "🌐 Remoto"}</div>
             </div>
-            <div style={{ fontSize: "clamp(12px,3.3vw,14px)" }}>📍 Presencial</div>
-          </div>
-          <div
-            className={`quiz-option ${serviceType === "remoto" ? "selected" : ""}`}
-            style={{ flex: 1, margin: 0, padding: "11px 12px" }}
-            onClick={() => setServiceType("remoto")}
-          >
-            <div className="quiz-option-check">
-              {serviceType === "remoto" && <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>}
-            </div>
-            <div style={{ fontSize: "clamp(12px,3.3vw,14px)" }}>🌐 Remoto</div>
-          </div>
+          ))}
         </div>
       </div>
 
-      <div style={{ padding: "4px var(--hpad) 12px" }}>
-        <div className="section-sm" style={{ marginBottom: 10 }}>Como publicar?</div>
-      </div>
-
-      <div
-        className="plan-card plan-card-free"
-        style={{ cursor: "pointer", marginBottom: 8 }}
-        onClick={() => setPlan("avulso")}
-      >
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-          <div style={{ width: 20, height: 20, borderRadius: 6, border: plan === "avulso" ? "none" : "1.5px solid #7E7A9A", background: plan === "avulso" ? "var(--purple)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", marginTop: 2 }}>
-            {plan === "avulso" && <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>}
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: "clamp(13px,3.5vw,15px)", fontWeight: 600 }}>Publicação Avulsa</div>
-            <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginTop: 2 }}>Aparece no feed · Sem destaque</div>
-          </div>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(13px,3.8vw,16px)", fontWeight: 700, color: "#F5F3FF" }}>R$9,90</div>
+      {serviceType === "presencial" && (
+        <div style={{ margin: "0 var(--hpad) 12px" }}>
+          <div className="input-label">Localização</div>
+          <input
+            className="input-field"
+            placeholder="Ex: 1.2 km · Centro de Apucarana"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
         </div>
-      </div>
+      )}
 
-      <div
-        className="plan-card plan-card-pro"
-        style={{ cursor: "pointer" }}
-        onClick={() => setPlan("mensal")}
-      >
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-          <div style={{ width: 20, height: 20, borderRadius: 6, background: plan === "mensal" ? "var(--purple)" : "transparent", border: plan === "mensal" ? "none" : "1.5px solid rgba(138,99,255,.4)", display: "flex", alignItems: "center", justifyContent: "center", marginTop: 2, flexShrink: 0 }}>
-            {plan === "mensal" && <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>}
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: "clamp(13px,3.5vw,15px)", fontWeight: 600 }}>Plano Mensal ✨</div>
-            <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#C4B5FD", marginTop: 2 }}>Todas as tarefas em <strong>destaque</strong> · Prioridade no feed</div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(13px,3.8vw,16px)", fontWeight: 700, color: "#A78BFA" }}>R$19,90</div>
-            <div style={{ fontSize: "clamp(9px,2.5vw,11px)", color: "#7E7A9A" }}>/mês</div>
-          </div>
+      {error && (
+        <div style={{ margin: "0 var(--hpad) 8px", padding: "10px 14px", background: "rgba(239,68,68,.1)", border: "1px solid rgba(239,68,68,.3)", borderRadius: 10, fontSize: "clamp(12px,3.3vw,14px)", color: "#FCA5A5" }}>
+          {error}
         </div>
-      </div>
+      )}
 
       <div style={{ padding: "14px var(--hpad) 0" }}>
-        <button className="btn btn-primary" onClick={() => navigate("/home")}>
-          Publicar tarefa →
+        <button className="btn btn-primary" onClick={handleSubmit} disabled={submitting}>
+          {submitting ? "Publicando..." : "Publicar tarefa →"}
         </button>
       </div>
     </div>
