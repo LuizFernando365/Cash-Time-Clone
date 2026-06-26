@@ -1,0 +1,1 @@
+- [CashTime task visibility rule](cashtime-task-visibility.md) — tarefas e ranking só aparecem quando usuários reais publicam; nunca inserir dados de seed/teste

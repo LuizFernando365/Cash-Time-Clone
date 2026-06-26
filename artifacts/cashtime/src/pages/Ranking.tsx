@@ -38,6 +38,25 @@ export default function Ranking() {
           <div style={{ textAlign: "center", padding: "40px 0", color: "#7E7A9A" }}>Carregando...</div>
         )}
 
+        {/* Empty state */}
+        {!loading && ranking.length === 0 && (
+          <div style={{ textAlign: "center", padding: "clamp(40px,12vw,64px) var(--hpad)", color: "#7E7A9A" }}>
+            <div style={{ fontSize: "clamp(36px,10vw,48px)", marginBottom: 14 }}>🏆</div>
+            <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(14px,4vw,17px)", fontWeight: 700, color: "#C4B5FD", marginBottom: 8 }}>
+              O ranking está vazio
+            </div>
+            <div style={{ fontSize: "clamp(12px,3.3vw,14px)", lineHeight: 1.6, maxWidth: 240, margin: "0 auto" }}>
+              Complete tarefas para aparecer no ranking e ganhar credibilidade na plataforma.
+            </div>
+            <div style={{ marginTop: 20, display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,.08)", border: "1px solid rgba(124,58,237,.2)", borderRadius: 12, padding: "10px 16px" }}>
+              <span style={{ fontSize: 16 }}>⚡</span>
+              <span style={{ fontSize: "clamp(11px,3vw,13px)", color: "#A78BFA" }}>
+                Seja o primeiro a pontuar!
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Podium */}
         {!loading && top3.length > 0 && (
           <div style={{ margin: "8px var(--hpad) 16px", background: "linear-gradient(135deg,rgba(124,58,237,.12),var(--card))", border: "1px solid var(--border)", borderRadius: 16, padding: "clamp(12px,3.5vw,16px)" }}>

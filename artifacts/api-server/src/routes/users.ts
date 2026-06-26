@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, usersTable, tasksTable } from "@workspace/db";
-import { eq, or, desc } from "drizzle-orm";
+import { eq, or, desc, gt } from "drizzle-orm";
 
 const router = Router();
 
@@ -24,6 +24,7 @@ router.get("/users/:id/tasks", async (req, res) => {
 });
 
 router.get("/ranking", async (req, res) => {
+  // Only include users who have real activity (completed tasks or earned points)
   const users = await db
     .select({
       id: usersTable.id,
@@ -37,6 +38,7 @@ router.get("/ranking", async (req, res) => {
       totalEarned: usersTable.totalEarned,
     })
     .from(usersTable)
+    .where(gt(usersTable.tasksCompleted, 0))
     .orderBy(desc(usersTable.rankPoints));
   res.json(users);
 });
