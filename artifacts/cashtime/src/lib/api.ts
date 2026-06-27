@@ -59,6 +59,15 @@ export const api = {
   sendMessage: (convId: string, senderId: string, content: string) =>
     req<Message>("POST", `/conversations/${convId}/messages`, { senderId, content }),
 
+  editMessage: (convId: string, msgId: string, content: string) =>
+    req<Message>("PATCH", `/conversations/${convId}/messages/${msgId}`, { content }),
+
+  deleteMessage: (convId: string, msgId: string) =>
+    req<Message>("DELETE", `/conversations/${convId}/messages/${msgId}`),
+
+  reactMessage: (convId: string, msgId: string, userId: string, emoji: string) =>
+    req<Message>("POST", `/conversations/${convId}/messages/${msgId}/react`, { userId, emoji }),
+
   getRanking: () => req<RankingEntry[]>("GET", "/ranking"),
 
   getUser: (id: string) => req<User>("GET", `/users/${id}`),
@@ -150,6 +159,9 @@ export interface Message {
   senderId: string;
   content: string;
   read: boolean;
+  editedAt?: string | null;
+  deletedAt?: string | null;
+  reactions?: string;
   createdAt: string;
 }
 

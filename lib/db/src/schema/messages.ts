@@ -18,6 +18,9 @@ export const messagesTable = pgTable("messages", {
   senderId: text("sender_id").notNull(),
   content: text("content").notNull(),
   read: boolean("read").notNull().default(false),
+  editedAt: timestamp("edited_at"),
+  deletedAt: timestamp("deleted_at"),
+  reactions: text("reactions").notNull().default("[]"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
