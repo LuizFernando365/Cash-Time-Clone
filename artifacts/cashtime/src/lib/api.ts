@@ -43,8 +43,11 @@ export const api = {
 
   createTask: (data: CreateTaskRequest) => req<Task>("POST", "/tasks", data),
 
-  updateTask: (id: string, data: { status?: string; executorId?: string }) =>
+  updateTask: (id: string, data: { status?: string; executorId?: string; highlight?: boolean; priority?: number }) =>
     req<Task>("PATCH", `/tasks/${id}`, data),
+
+  boostTask: (id: string, priority: 1 | 2) =>
+    req<Task>("POST", `/tasks/${id}/boost`, { priority }),
 
   listConversations: () => req<ConversationWithUser[]>("GET", "/conversations"),
 
@@ -61,6 +64,9 @@ export const api = {
   getUser: (id: string) => req<User>("GET", `/users/${id}`),
 
   getUserTasks: (id: string) => req<Task[]>("GET", `/users/${id}/tasks`),
+
+  updateUser: (id: string, data: Partial<Pick<User, "name" | "bio" | "city">>) =>
+    req<User>("PUT", `/users/${id}`, data),
 };
 
 export interface User {
@@ -86,6 +92,7 @@ export interface Task {
   description: string;
   category: string;
   categoryEmoji: string;
+  categories: string[];
   price: number;
   estimatedTime: string;
   location: string;
@@ -93,6 +100,7 @@ export interface Task {
   lat?: string | null;
   lng?: string | null;
   tags: string[];
+  priority: number;
   status: string;
   highlight: boolean;
   creatorId: string;
@@ -110,6 +118,7 @@ export interface CreateTaskRequest {
   description: string;
   category: string;
   categoryEmoji?: string;
+  categories?: string[];
   price: number;
   estimatedTime: string;
   location: string;

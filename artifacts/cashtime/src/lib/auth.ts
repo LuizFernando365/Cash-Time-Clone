@@ -22,6 +22,10 @@ export function getStoredUser(): User | null {
   }
 }
 
+export function setStoredUser(user: User) {
+  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+}
+
 export function getToken(): string | null {
   return localStorage.getItem(USER_KEY);
 }

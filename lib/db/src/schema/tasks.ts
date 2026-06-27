@@ -15,6 +15,8 @@ export const tasksTable = pgTable("tasks", {
   lat: text("lat"),
   lng: text("lng"),
   tags: text("tags").array().notNull().default([]),
+  categories: text("categories").array().notNull().default([]),
+  priority: integer("priority").notNull().default(0),
   status: text("status").notNull().default("open"),
   highlight: boolean("highlight").notNull().default(false),
   creatorId: text("creator_id").notNull(),

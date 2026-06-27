@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import BottomNav from "@/components/BottomNav";
 import { api, type RankingEntry } from "@/lib/api";
 import { getStoredUser } from "@/lib/auth";
@@ -7,6 +8,7 @@ const MEDAL_COLORS = ["#FCD34D", "#CBD5E1", "#D97706"];
 const MEDAL_EMOJIS = ["🥇", "🥈", "🥉"];
 
 export default function Ranking() {
+  const [, navigate] = useLocation();
   const [period, setPeriod] = useState<"semana" | "mes">("semana");
   const [ranking, setRanking] = useState<RankingEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,16 +20,25 @@ export default function Ranking() {
 
   const myPos = ranking.findIndex((r) => r.id === user?.id);
   const top3 = ranking.slice(0, 3);
-  const rest = ranking.slice(3);
 
   return (
     <>
       <div className="screen" style={{ paddingBottom: 80 }}>
-        <div style={{ padding: "16px var(--hpad) 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
+        <div style={{ padding: "16px var(--hpad) 12px", display: "flex", alignItems: "center", gap: 12 }}>
+          {/* Back arrow */}
+          <svg
+            width="22" height="22" fill="none" viewBox="0 0 24 24"
+            style={{ cursor: "pointer", flexShrink: 0 }}
+            onClick={() => navigate("/profile")}
+          >
+            <path d="M19 12H5M12 5l-7 7 7 7" stroke="#7E7A9A" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+
+          <div style={{ flex: 1 }}>
             <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(17px,5vw,21px)", fontWeight: 700 }}>Ranking</div>
             <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginTop: 2 }}>Top performers</div>
           </div>
+
           <div style={{ display: "flex", gap: 8 }}>
             <div className={`chip ${period === "semana" ? "active" : ""}`} style={{ fontSize: "clamp(10px,2.8vw,12px)", padding: "4px 10px" }} onClick={() => setPeriod("semana")}>Semana</div>
             <div className={`chip ${period === "mes" ? "active" : ""}`} style={{ fontSize: "clamp(10px,2.8vw,12px)", padding: "4px 10px" }} onClick={() => setPeriod("mes")}>Mês</div>
@@ -50,9 +61,7 @@ export default function Ranking() {
             </div>
             <div style={{ marginTop: 20, display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,.08)", border: "1px solid rgba(124,58,237,.2)", borderRadius: 12, padding: "10px 16px" }}>
               <span style={{ fontSize: 16 }}>⚡</span>
-              <span style={{ fontSize: "clamp(11px,3vw,13px)", color: "#A78BFA" }}>
-                Seja o primeiro a pontuar!
-              </span>
+              <span style={{ fontSize: "clamp(11px,3vw,13px)", color: "#A78BFA" }}>Seja o primeiro a pontuar!</span>
             </div>
           </div>
         )}
@@ -61,7 +70,6 @@ export default function Ranking() {
         {!loading && top3.length > 0 && (
           <div style={{ margin: "8px var(--hpad) 16px", background: "linear-gradient(135deg,rgba(124,58,237,.12),var(--card))", border: "1px solid var(--border)", borderRadius: 16, padding: "clamp(12px,3.5vw,16px)" }}>
             <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: "clamp(8px,3vw,14px)", marginBottom: 4 }}>
-              {/* Reorder: 2nd, 1st, 3rd */}
               {[1, 0, 2].filter(i => top3[i]).map((idx) => {
                 const r = top3[idx];
                 const isFirst = idx === 0;
@@ -74,15 +82,13 @@ export default function Ranking() {
                       <div style={{
                         width: isFirst ? "clamp(42px,12vw,52px)" : "clamp(36px,10vw,44px)",
                         height: isFirst ? "clamp(42px,12vw,52px)" : "clamp(36px,10vw,44px)",
-                        background: r.avatarBg,
-                        border: `2px solid ${color}88`,
+                        background: r.avatarBg, border: `2px solid ${color}88`,
                         borderRadius: isFirst ? 16 : 14,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         margin: "0 auto",
                         fontFamily: "'Syne', sans-serif",
                         fontSize: isFirst ? "clamp(13px,4vw,17px)" : "clamp(12px,3.5vw,15px)",
-                        fontWeight: 700,
-                        color: r.avatarColor
+                        fontWeight: 700, color: r.avatarColor,
                       }}>
                         {r.avatarInitials}
                       </div>
@@ -93,8 +99,7 @@ export default function Ranking() {
                       width: "100%", height: barH,
                       background: isFirst ? `linear-gradient(180deg,${color}26,${color}0d)` : `${color}14`,
                       borderRadius: "6px 6px 0 0", marginTop: 8,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 18,
+                      display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
                       ...(isFirst ? { border: `1px solid ${color}33`, borderBottom: "none" } : {}),
                     }}>
                       {MEDAL_EMOJIS[idx]}
@@ -127,7 +132,7 @@ export default function Ranking() {
         )}
 
         {/* Full ranking */}
-        {!loading && (
+        {!loading && ranking.length > 0 && (
           <>
             <div style={{ padding: "4px var(--hpad) 8px" }}><div className="section-sm">Ranking geral</div></div>
             <div style={{ padding: "0 var(--hpad)", display: "flex", flexDirection: "column", gap: 6 }}>

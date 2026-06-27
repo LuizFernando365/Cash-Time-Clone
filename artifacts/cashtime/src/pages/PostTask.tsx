@@ -17,7 +17,7 @@ export default function PostTask() {
   const [, navigate] = useLocation();
   const user = getStoredUser();
   const [serviceType, setServiceType] = useState<"presencial" | "remoto">("presencial");
-  const [categoryIdx, setCategoryIdx] = useState(0);
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([0]);
   const [timeIdx, setTimeIdx] = useState(2);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
@@ -28,31 +28,31 @@ export default function PostTask() {
   const [coords, setCoords] = useState<{ lat: string; lng: string } | null>(null);
   const [geoStatus, setGeoStatus] = useState<"idle" | "loading" | "ok" | "denied">("idle");
 
-  const cat = CATEGORIES[categoryIdx];
-
-  // Auto-detect location when switching to presencial
   useEffect(() => {
     if (serviceType === "presencial" && geoStatus === "idle") {
       captureLocation();
     }
   }, [serviceType]);
 
+  function toggleCategory(idx: number) {
+    setSelectedCategories((prev) => {
+      if (prev.includes(idx)) {
+        if (prev.length === 1) return prev; // keep at least one
+        return prev.filter((i) => i !== idx);
+      }
+      return [...prev, idx];
+    });
+  }
+
   function captureLocation() {
-    if (!navigator.geolocation) {
-      setGeoStatus("denied");
-      return;
-    }
+    if (!navigator.geolocation) { setGeoStatus("denied"); return; }
     setGeoStatus("loading");
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const lat = pos.coords.latitude.toFixed(6);
-        const lng = pos.coords.longitude.toFixed(6);
-        setCoords({ lat, lng });
+        setCoords({ lat: pos.coords.latitude.toFixed(6), lng: pos.coords.longitude.toFixed(6) });
         setGeoStatus("ok");
       },
-      () => {
-        setGeoStatus("denied");
-      },
+      () => setGeoStatus("denied"),
       { timeout: 8000 }
     );
   }
@@ -62,18 +62,18 @@ export default function PostTask() {
       setError("Preencha título, descrição e valor.");
       return;
     }
-    if (!user) {
-      setError("Faça login primeiro.");
-      return;
-    }
+    if (!user) { setError("Faça login primeiro."); return; }
     setSubmitting(true);
     setError("");
     try {
+      const cats = selectedCategories.map((i) => CATEGORIES[i].label);
+      const primaryCat = CATEGORIES[selectedCategories[0]];
       await api.createTask({
         title: title.trim(),
         description: desc.trim(),
-        category: cat.label,
-        categoryEmoji: cat.emoji,
+        category: primaryCat.label,
+        categoryEmoji: primaryCat.emoji,
+        categories: cats,
         price: Math.round(parseFloat(value.replace(",", ".")) * 100) / 100,
         estimatedTime: TIME_OPTIONS[timeIdx],
         location: serviceType === "remoto"
@@ -143,17 +143,39 @@ export default function PostTask() {
       </div>
 
       <div style={{ margin: "0 var(--hpad) 12px" }}>
-        <div className="input-label">Categoria</div>
+        <div className="input-label">
+          Categorias
+          <span style={{ fontWeight: 400, color: "#7E7A9A", marginLeft: 6 }}>
+            — selecione uma ou mais ({selectedCategories.length} selecionada{selectedCategories.length !== 1 ? "s" : ""})
+          </span>
+        </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {CATEGORIES.map((c, i) => (
-            <div
-              key={i}
-              className={`chip ${categoryIdx === i ? "active" : ""}`}
-              onClick={() => setCategoryIdx(i)}
-            >
-              {c.emoji} {c.label}
-            </div>
-          ))}
+          {CATEGORIES.map((c, i) => {
+            const active = selectedCategories.includes(i);
+            return (
+              <div
+                key={i}
+                onClick={() => toggleCategory(i)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "8px 14px", borderRadius: 20, cursor: "pointer",
+                  fontSize: "clamp(12px,3.3vw,14px)", fontWeight: active ? 600 : 400,
+                  background: active ? "rgba(124,58,237,.18)" : "var(--card)",
+                  border: `1.5px solid ${active ? "#7C3AED" : "var(--border)"}`,
+                  color: active ? "#C4B5FD" : "#7E7A9A",
+                  transition: "all .15s",
+                  userSelect: "none",
+                }}
+              >
+                {active && (
+                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
+                    <path d="M20 6L9 17l-5-5" stroke="#9F67FF" strokeWidth="2.5" strokeLinecap="round" />
+                  </svg>
+                )}
+                {c.emoji} {c.label}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -185,28 +207,18 @@ export default function PostTask() {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
-          {/* GPS status */}
           <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 8 }}>
-            {geoStatus === "loading" && (
-              <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#7E7A9A" }}>
-                📡 Obtendo sua localização GPS...
-              </div>
-            )}
+            {geoStatus === "loading" && <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#7E7A9A" }}>📡 Obtendo sua localização GPS...</div>}
             {geoStatus === "ok" && coords && (
               <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#34D399", display: "flex", alignItems: "center", gap: 6 }}>
-                <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
-                  <path d="M20 6L9 17l-5-5" stroke="#34D399" strokeWidth="2.5" strokeLinecap="round" />
-                </svg>
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#34D399" strokeWidth="2.5" strokeLinecap="round" /></svg>
                 GPS capturado — tarefa aparecerá no mapa
               </div>
             )}
             {geoStatus === "denied" && (
               <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#FBBF24" }}>
-                ⚠️ GPS não disponível — tarefa não aparecerá no mapa
-                <span
-                  style={{ marginLeft: 8, color: "#9F67FF", cursor: "pointer", textDecoration: "underline" }}
-                  onClick={captureLocation}
-                >
+                ⚠️ GPS não disponível
+                <span style={{ marginLeft: 8, color: "#9F67FF", cursor: "pointer", textDecoration: "underline" }} onClick={captureLocation}>
                   Tentar novamente
                 </span>
               </div>

@@ -16,11 +16,38 @@ function timeAgo(iso: string) {
   return `há ${Math.floor(h / 24)}d`;
 }
 
+function PrioritySeal({ priority }: { priority: number }) {
+  if (priority === 2) {
+    return (
+      <span style={{
+        display: "inline-flex", alignItems: "center", gap: 4,
+        background: "linear-gradient(90deg,#7C3AED,#A855F7)",
+        borderRadius: 20, padding: "3px 10px",
+        fontSize: "clamp(9px,2.5vw,11px)", fontWeight: 700, color: "white",
+        boxShadow: "0 0 8px rgba(124,58,237,.5)",
+      }}>⭐ Premium</span>
+    );
+  }
+  if (priority === 1) {
+    return (
+      <span style={{
+        display: "inline-flex", alignItems: "center", gap: 4,
+        background: "rgba(251,191,36,.15)",
+        border: "1px solid rgba(251,191,36,.4)",
+        borderRadius: 20, padding: "3px 10px",
+        fontSize: "clamp(9px,2.5vw,11px)", fontWeight: 700, color: "#FBBF24",
+      }}>✨ Destaque</span>
+    );
+  }
+  return null;
+}
+
 export default function Home() {
   const [, navigate] = useLocation();
   const [activeFilter, setActiveFilter] = useState(0);
   const [tasks, setTasks] = useState<TaskWithCreator[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showNotif, setShowNotif] = useState(false);
   const user = getStoredUser();
 
   useEffect(() => {
@@ -31,7 +58,10 @@ export default function Home() {
 
   const filtered = activeFilter === 0
     ? othersOnly
-    : othersOnly.filter((t) => t.category === filters[activeFilter]);
+    : othersOnly.filter((t) => {
+        const cat = filters[activeFilter];
+        return t.category === cat || (t.categories ?? []).includes(cat);
+      });
 
   return (
     <>
@@ -45,7 +75,7 @@ export default function Home() {
             </div>
             <span className="logo-text">Cash<span style={{ color: "#9F67FF" }}>Time</span></span>
           </div>
-          <div style={{ position: "relative" }}>
+          <div style={{ position: "relative", cursor: "pointer", padding: 4 }} onClick={() => setShowNotif(true)}>
             <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
               <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#7E7A9A" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
@@ -76,9 +106,7 @@ export default function Home() {
           ))}
         </div>
 
-        {loading && (
-          <div style={{ textAlign: "center", padding: "40px 0", color: "#7E7A9A" }}>Carregando tarefas...</div>
-        )}
+        {loading && <div style={{ textAlign: "center", padding: "40px 0", color: "#7E7A9A" }}>Carregando tarefas...</div>}
 
         {!loading && filtered.length === 0 && (
           <div style={{ textAlign: "center", padding: "40px var(--hpad)", color: "#7E7A9A" }}>
@@ -90,22 +118,19 @@ export default function Home() {
         {filtered.map((task) => (
           <div
             key={task.id}
-            className={`card ${task.highlight ? "card-highlight" : ""}`}
+            className={`card ${task.priority >= 1 || task.highlight ? "card-highlight" : ""}`}
             onClick={() => navigate(`/task/${task.id}`)}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer", position: "relative" }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-              {task.highlight ? (
-                <>
-                  <span className="pill" style={{ fontSize: 10 }}>⭐ Destaque</span>
-                  <span className="pill pill-green">{task.categoryEmoji} {task.category}</span>
-                </>
-              ) : (
-                <>
-                  <span className="pill">{task.categoryEmoji} {task.category}</span>
-                  <span style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>{timeAgo(task.createdAt)}</span>
-                </>
-              )}
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+                {task.priority >= 1 && <PrioritySeal priority={task.priority} />}
+                <span className="pill">{task.categoryEmoji} {task.category}</span>
+                {(task.categories ?? []).filter(c => c !== task.category).map(c => (
+                  <span key={c} className="pill" style={{ opacity: 0.7 }}>{c}</span>
+                ))}
+              </div>
+              <span style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A", flexShrink: 0 }}>{timeAgo(task.createdAt)}</span>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
@@ -132,7 +157,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="divider" style={{ margin: task.highlight ? "12px 0" : "10px 0" }} />
+            <div className="divider" style={{ margin: "10px 0" }} />
 
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
@@ -147,7 +172,7 @@ export default function Home() {
                 </div>
               </div>
               <button
-                className={task.highlight ? "btn btn-primary" : "btn btn-secondary"}
+                className={task.priority >= 1 || task.highlight ? "btn btn-primary" : "btn btn-secondary"}
                 style={{ width: "auto", padding: "8px clamp(10px,3vw,16px)", fontSize: "clamp(11px,3vw,13px)", flexShrink: 0 }}
                 onClick={(e) => { e.stopPropagation(); navigate(`/task/${task.id}`); }}
               >
@@ -157,7 +182,29 @@ export default function Home() {
           </div>
         ))}
       </div>
+
       <BottomNav active="home" />
+
+      {/* Notifications modal */}
+      {showNotif && (
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 300, display: "flex", alignItems: "flex-end" }}
+          onClick={() => setShowNotif(false)}
+        >
+          <div
+            style={{ width: "100%", background: "var(--card)", borderRadius: "20px 20px 0 0", padding: "20px var(--hpad) 40px", maxHeight: "70vh", overflowY: "auto" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ width: 40, height: 4, background: "var(--border)", borderRadius: 2, margin: "0 auto 20px" }} />
+            <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(15px,4.5vw,18px)", fontWeight: 700, marginBottom: 16 }}>Notificações</div>
+            <div style={{ textAlign: "center", padding: "32px 0", color: "#7E7A9A" }}>
+              <div style={{ fontSize: 36, marginBottom: 10 }}>🔔</div>
+              <div style={{ fontSize: "clamp(13px,3.5vw,15px)", color: "#C4B5FD", fontWeight: 600, marginBottom: 6 }}>Tudo em dia!</div>
+              <div style={{ fontSize: "clamp(11px,3vw,13px)" }}>Você não tem notificações novas.</div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
