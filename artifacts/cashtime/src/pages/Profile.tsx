@@ -307,38 +307,104 @@ export default function Profile() {
 
       {/* ── Boost modal ── */}
       {boostTask && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.7)", zIndex: 400, display: "flex", alignItems: "center", padding: "0 var(--hpad)" }}
-          onClick={() => !boostLoading && setBoostTask(null)}>
-          <div style={{ width: "100%", background: "var(--card)", borderRadius: 20, padding: "24px var(--hpad)" }}
-            onClick={(e) => e.stopPropagation()}>
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 400, overflowY: "auto", display: "flex", alignItems: "flex-start" }}
+          onClick={() => !boostLoading && setBoostTask(null)}
+        >
+          <div style={{ width: "100%", minHeight: "100%", display: "flex", flexDirection: "column" }} onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div style={{ padding: "16px var(--hpad) 8px", display: "flex", alignItems: "center", gap: 10, background: "var(--bg)" }}>
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" onClick={() => !boostLoading && setBoostTask(null)} style={{ cursor: "pointer" }}>
+                <path d="M19 12H5M12 5l-7 7 7 7" stroke="#7E7A9A" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+
             {boostDone ? (
-              <div style={{ textAlign: "center", padding: "16px 0" }}>
-                <div style={{ fontSize: 40, marginBottom: 12 }}>🚀</div>
-                <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(15px,4.5vw,18px)", fontWeight: 700, color: "#C4B5FD" }}>Tarefa impulsionada!</div>
-                <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#7E7A9A", marginTop: 6 }}>Ela já está no topo do feed.</div>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px var(--hpad)", background: "var(--bg)" }}>
+                <div style={{ fontSize: 52, marginBottom: 16 }}>🚀</div>
+                <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(17px,5vw,22px)", fontWeight: 800, color: "#C4B5FD", textAlign: "center", marginBottom: 8 }}>Tarefa impulsionada!</div>
+                <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#7E7A9A", textAlign: "center" }}>Ela já está no topo do feed.</div>
               </div>
             ) : (
-              <>
-                <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(15px,4.5vw,18px)", fontWeight: 700, marginBottom: 4 }}>Impulsionar tarefa</div>
-                <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginBottom: 16 }}>"{boostTask.title}"</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
-                  {BOOST_OPTIONS.filter(o => o.priority > boostTask.priority).map((opt) => (
-                    <button
-                      key={opt.priority}
-                      className={opt.priority === 2 ? "btn btn-primary" : "btn btn-secondary"}
-                      onClick={() => handleBoost(boostTask, opt.priority)}
-                      disabled={boostLoading}
-                      style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-                    >
-                      <span>{opt.label} — {opt.desc}</span>
-                      <strong style={{ marginLeft: 8, flexShrink: 0 }}>{opt.price}</strong>
-                    </button>
-                  ))}
+              <div style={{ flex: 1, background: "var(--bg)", paddingBottom: 32 }}>
+                {/* Title */}
+                <div style={{ padding: "12px var(--hpad) 16px", textAlign: "center" }}>
+                  <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(17px,5vw,22px)", fontWeight: 800, marginBottom: 6 }}>Impulsione suas tarefas</div>
+                  <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#7E7A9A", lineHeight: 1.5 }}>Alcance mais pessoas qualificadas e feche mais rápido</div>
                 </div>
-                <button className="btn btn-ghost" onClick={() => setBoostTask(null)} disabled={boostLoading}>
-                  Cancelar
-                </button>
-              </>
+
+                {/* Card R$9,90 — only if task isn't already at priority 1+ */}
+                {boostTask.priority < 1 && (
+                  <div
+                    className="plan-card plan-card-free"
+                    style={{ cursor: boostLoading ? "not-allowed" : "pointer", opacity: boostLoading ? 0.6 : 1, transition: "opacity .15s" }}
+                    onClick={() => !boostLoading && handleBoost(boostTask, 1)}
+                  >
+                    <div style={{ marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                      <div>
+                        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(14px,4vw,17px)", fontWeight: 700 }}>Publicação Avulsa</div>
+                        <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginTop: 2 }}>Para tarefas pontuais</div>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(20px,6vw,26px)", fontWeight: 800, color: "#F5F3FF" }}>R$9,90</div>
+                        <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>por tarefa</div>
+                      </div>
+                    </div>
+                    <div className="divider" style={{ margin: "10px 0" }} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                      {[
+                        { ok: true,  text: "Aparece no feed de tarefas" },
+                        { ok: true,  text: "Nicho direcionado automaticamente" },
+                        { ok: false, text: "Sem prioridade no feed" },
+                        { ok: false, text: "Sem badge de destaque" },
+                      ].map((item, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "clamp(12px,3.3vw,14px)", color: item.ok ? "#C4B5FD" : "#7E7A9A" }}>
+                          {item.ok ? (
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#9F67FF" strokeWidth="2" strokeLinecap="round" /></svg>
+                          ) : (
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#7E7A9A" strokeWidth="2" strokeLinecap="round" /></svg>
+                          )}
+                          {item.text}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Card R$19,90 — only if task isn't already at priority 2 */}
+                {boostTask.priority < 2 && (
+                  <div
+                    className="plan-card plan-card-pro"
+                    style={{ cursor: boostLoading ? "not-allowed" : "pointer", opacity: boostLoading ? 0.6 : 1, transition: "opacity .15s" }}
+                    onClick={() => !boostLoading && handleBoost(boostTask, 2)}
+                  >
+                    <div style={{ position: "absolute", top: 14, right: 14, background: "linear-gradient(135deg,#7C3AED,#A78BFA)", borderRadius: 6, padding: "3px 9px", fontSize: "clamp(9px,2.5vw,11px)", fontWeight: 700, color: "white", letterSpacing: ".05em" }}>POPULAR</div>
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(14px,4vw,17px)", fontWeight: 700, marginBottom: 2 }}>Plano Mensal Pro ✨</div>
+                      <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#A78BFA" }}>Recrutadores frequentes</div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "flex-end", gap: 6, marginBottom: 12 }}>
+                      <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(26px,8vw,34px)", fontWeight: 800, color: "#A78BFA", lineHeight: 1 }}>R$19,90</div>
+                      <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#7E7A9A", paddingBottom: 4 }}>/mês</div>
+                    </div>
+                    <div className="divider" style={{ margin: "10px 0", background: "rgba(138,99,255,.25)" }} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                      {[
+                        <><strong style={{ color: "#F5F3FF" }}>Todas</strong> as tarefas com destaque</>,
+                        "Prioridade no topo do feed",
+                        "Badge ⭐ em todas as publicações",
+                        "Publicações ilimitadas no mês",
+                        "Relatório de interesse por tarefa",
+                      ].map((text, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "clamp(12px,3.3vw,14px)", color: "#C4B5FD" }}>
+                          <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#A78BFA" strokeWidth="2" strokeLinecap="round" /></svg>
+                          {text}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
