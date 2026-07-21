@@ -417,3 +417,40 @@ html, body, #root {
   margin: 0 auto 20px;
   box-shadow: 0 0 40px rgba(124,58,237,0.2);
 }
+
+/* ── ANIMATIONS ───────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* Page entry animation helper */
+.page-enter { animation: fadeInUp 0.38s ease both; }
+.page-enter-fast { animation: fadeInUp 0.22s ease both; }
+
+/* Card hover feedback */
+.card { transition: transform .15s, box-shadow .15s; }
+.card:active { transform: scale(0.985); }
+
+/* Btn press feedback */
+.btn { transition: opacity .15s, transform .1s; }
+.btn:active { transform: scale(0.97); }

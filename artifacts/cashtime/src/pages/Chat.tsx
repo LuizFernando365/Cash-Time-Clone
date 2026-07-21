@@ -52,6 +52,8 @@ export default function Chat() {
       setConv(convs.find((c) => c.id === convId) ?? null);
     });
     api.listMessages(convId).then(setMessages).catch(console.error);
+    // Mark all messages as read when chat opens
+    api.markConvRead(convId).catch(() => {});
 
     // SSE real-time stream
     const url = `/api/conversations/${convId}/stream?userId=${encodeURIComponent(user.id)}`;

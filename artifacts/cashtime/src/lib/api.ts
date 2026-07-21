@@ -68,6 +68,26 @@ export const api = {
   reactMessage: (convId: string, msgId: string, userId: string, emoji: string) =>
     req<Message>("POST", `/conversations/${convId}/messages/${msgId}/react`, { userId, emoji }),
 
+  markConvRead: (convId: string) =>
+    req<{ ok: boolean }>("POST", `/conversations/${convId}/read`),
+
+  deleteTask: (id: string) => req<{ ok: boolean }>("DELETE", `/tasks/${id}`),
+
+  editTask: (id: string, data: { title?: string; description?: string; price?: number; location?: string; estimatedTime?: string }) =>
+    req<Task>("PATCH", `/tasks/${id}`, data),
+
+  acceptTask: (id: string, executorId: string) =>
+    req<Task>("PATCH", `/tasks/${id}`, { executorId, status: "in_progress" }),
+
+  completeTask: (id: string) =>
+    req<Task>("PATCH", `/tasks/${id}`, { status: "done" }),
+
+  upgradePlan: (userId: string) =>
+    req<User>("POST", `/users/${userId}/plan`, { plan: "pro" }),
+
+  cancelPlan: (userId: string) =>
+    req<User>("POST", `/users/${userId}/plan`, { plan: "free" }),
+
   getRanking: () => req<RankingEntry[]>("GET", "/ranking"),
 
   getUser: (id: string) => req<User>("GET", `/users/${id}`),

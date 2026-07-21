@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import BottomNav from "@/components/BottomNav";
 import { api, type Task, type User } from "@/lib/api";
-import { getStoredUser, setStoredUser } from "@/lib/auth";
+import { getStoredUser, setStoredUser, clearSession } from "@/lib/auth";
 
 const stars = [1, 2, 3, 4, 5];
 
@@ -55,6 +55,15 @@ export default function Profile() {
   const [boostTask, setBoostTask] = useState<Task | null>(null);
   const [boostLoading, setBoostLoading] = useState(false);
   const [boostDone, setBoostDone] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [editTask, setEditTask] = useState<Task | null>(null);
+  const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
+  const [deletingTask, setDeletingTask] = useState(false);
+  const [editTaskTitle, setEditTaskTitle] = useState("");
+  const [editTaskDesc, setEditTaskDesc] = useState("");
+  const [editTaskPrice, setEditTaskPrice] = useState("");
+  const [editTaskLocation, setEditTaskLocation] = useState("");
+  const [editTaskSaving, setEditTaskSaving] = useState(false);
 
   // Edit form state
   const [editName, setEditName] = useState("");
@@ -119,13 +128,52 @@ export default function Profile() {
     }
   }
 
+  function handleLogout() {
+    clearSession();
+    navigate("/");
+  }
+
+  function openEditTask(task: Task) {
+    setEditTask(task);
+    setEditTaskTitle(task.title);
+    setEditTaskDesc(task.description);
+    setEditTaskPrice(String(task.price));
+    setEditTaskLocation(task.location ?? "");
+  }
+
+  async function saveEditTask() {
+    if (!editTask) return;
+    setEditTaskSaving(true);
+    try {
+      await api.editTask(editTask.id, {
+        title: editTaskTitle.trim(),
+        description: editTaskDesc.trim(),
+        price: parseFloat(editTaskPrice.replace(",", ".")),
+        location: editTaskLocation.trim(),
+      });
+      const updated = await api.getUserTasks(user!.id);
+      setTasks(updated);
+      setEditTask(null);
+    } catch { /* ignore */ } finally { setEditTaskSaving(false); }
+  }
+
+  async function confirmDeleteTask() {
+    if (!deleteTaskId) return;
+    setDeletingTask(true);
+    try {
+      await api.deleteTask(deleteTaskId);
+      setTasks((prev) => prev.filter((t) => t.id !== deleteTaskId));
+      setDeleteTaskId(null);
+    } catch { /* ignore */ } finally { setDeletingTask(false); }
+  }
+
   async function handleBoost(task: Task, priority: 1 | 2) {
     setBoostLoading(true);
     try {
       await api.boostTask(task.id, priority);
       setBoostDone(true);
       // Refresh tasks list
-      const updated = await api.getUserTasks(user.id);
+      const updated = await api.getUserTasks(user!.id);
       setTasks(updated);
       setTimeout(() => { setBoostDone(false); setBoostTask(null); }, 1800);
     } catch {
@@ -241,6 +289,9 @@ export default function Profile() {
           <button className="btn btn-secondary" onClick={openEdit}>Editar perfil</button>
           <button className="btn btn-ghost" onClick={() => navigate("/ranking")}>Ver ranking global</button>
           <button className="btn btn-ghost" onClick={() => navigate("/plans")}>Ver planos</button>
+          <button className="btn btn-ghost" style={{ color: "#F87171", borderColor: "rgba(248,113,113,.25)" }} onClick={() => setShowLogoutConfirm(true)}>
+            Sair da conta
+          </button>
         </div>
       </div>
 
@@ -286,15 +337,21 @@ export default function Profile() {
                             {task.priority === 2 ? "⭐ Impulsionada Premium" : "✨ Impulsionada Destaque"}
                           </div>
                         )}
-                        {task.status === "open" && task.priority < 2 && (
-                          <button
-                            className="btn btn-secondary"
-                            style={{ padding: "8px 14px", fontSize: "clamp(11px,3vw,13px)", marginTop: 4 }}
-                            onClick={() => { setBoostTask(task); setBoostDone(false); }}
-                          >
-                            ⚡ Impulsionar tarefa
+                        <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+                          {task.status === "open" && task.priority < 2 && (
+                            <button className="btn btn-secondary" style={{ padding: "7px 12px", fontSize: "clamp(10px,2.8vw,12px)", flex: 1 }} onClick={() => { setBoostTask(task); setBoostDone(false); }}>
+                              ⚡ Impulsionar
+                            </button>
+                          )}
+                          {task.status === "open" && (
+                            <button className="btn btn-ghost" style={{ padding: "7px 12px", fontSize: "clamp(10px,2.8vw,12px)", flex: 1 }} onClick={() => openEditTask(task)}>
+                              ✏️ Editar
+                            </button>
+                          )}
+                          <button className="btn btn-ghost" style={{ padding: "7px 12px", fontSize: "clamp(10px,2.8vw,12px)", color: "#F87171", borderColor: "rgba(248,113,113,.2)", flex: 0 }} onClick={() => setDeleteTaskId(task.id)}>
+                            🗑
                           </button>
-                        )}
+                        </div>
                       </div>
                     );
                   })}
@@ -495,6 +552,79 @@ export default function Profile() {
               <button className="btn btn-ghost" onClick={() => setShowEditModal(false)} disabled={editSaving}>
                 Cancelar
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Logout confirmation ── */}
+      {showLogoutConfirm && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 var(--hpad)" }}
+          onClick={() => setShowLogoutConfirm(false)}>
+          <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: "24px", width: "100%", maxWidth: 340, textAlign: "center" }}
+            onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>👋</div>
+            <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(15px,4.5vw,18px)", fontWeight: 700, marginBottom: 8 }}>Sair da conta?</div>
+            <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#7E7A9A", marginBottom: 20 }}>Você precisará fazer login novamente para acessar o CashTime.</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <button className="btn btn-ghost" style={{ color: "#F87171", borderColor: "rgba(248,113,113,.25)" }} onClick={handleLogout}>Sim, sair</button>
+              <button className="btn btn-secondary" onClick={() => setShowLogoutConfirm(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Edit task modal ── */}
+      {editTask && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 500, display: "flex", alignItems: "flex-end" }}
+          onClick={() => !editTaskSaving && setEditTask(null)}>
+          <div style={{ width: "100%", background: "var(--card)", borderRadius: "20px 20px 0 0", padding: "20px var(--hpad) 36px", display: "flex", flexDirection: "column", gap: 12 }}
+            onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+              <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(14px,4vw,17px)", fontWeight: 700 }}>Editar tarefa</div>
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" onClick={() => !editTaskSaving && setEditTask(null)} style={{ cursor: "pointer" }}>
+                <path d="M18 6L6 18M6 6l12 12" stroke="#7E7A9A" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+            <div>
+              <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginBottom: 6 }}>Título</div>
+              <input className="input" value={editTaskTitle} onChange={(e) => setEditTaskTitle(e.target.value)} placeholder="Título da tarefa" />
+            </div>
+            <div>
+              <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginBottom: 6 }}>Descrição</div>
+              <textarea className="input" value={editTaskDesc} onChange={(e) => setEditTaskDesc(e.target.value)} placeholder="Descrição do serviço" style={{ minHeight: 70, resize: "none" }} />
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginBottom: 6 }}>Valor (R$)</div>
+                <input className="input" type="number" value={editTaskPrice} onChange={(e) => setEditTaskPrice(e.target.value)} placeholder="0,00" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginBottom: 6 }}>Local</div>
+                <input className="input" value={editTaskLocation} onChange={(e) => setEditTaskLocation(e.target.value)} placeholder="Localização" />
+              </div>
+            </div>
+            <button className="btn btn-primary" onClick={saveEditTask} disabled={editTaskSaving || !editTaskTitle.trim()}>
+              {editTaskSaving ? "Salvando..." : "Salvar alterações"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Delete task confirmation ── */}
+      {deleteTaskId && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 var(--hpad)" }}
+          onClick={() => !deletingTask && setDeleteTaskId(null)}>
+          <div style={{ background: "var(--card)", border: "1px solid rgba(248,113,113,.2)", borderRadius: 20, padding: "24px", width: "100%", maxWidth: 340, textAlign: "center" }}
+            onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🗑️</div>
+            <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(15px,4.5vw,18px)", fontWeight: 700, marginBottom: 8 }}>Excluir tarefa?</div>
+            <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#7E7A9A", marginBottom: 20 }}>Esta ação não pode ser desfeita. A tarefa será removida permanentemente.</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <button className="btn btn-ghost" style={{ color: "#F87171", borderColor: "rgba(248,113,113,.25)" }} onClick={confirmDeleteTask} disabled={deletingTask}>
+                {deletingTask ? "Excluindo..." : "Sim, excluir"}
+              </button>
+              <button className="btn btn-secondary" onClick={() => setDeleteTaskId(null)} disabled={deletingTask}>Cancelar</button>
             </div>
           </div>
         </div>

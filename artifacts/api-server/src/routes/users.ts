@@ -52,6 +52,15 @@ router.put("/users/:id", async (req, res) => {
   res.json(safe);
 });
 
+router.post("/users/:id/plan", async (req, res) => {
+  const { plan } = req.body as { plan: string };
+  if (!["free", "pro"].includes(plan)) { res.status(400).json({ error: "Plano inválido" }); return; }
+  const [updated] = await db.update(usersTable).set({ plan }).where(eq(usersTable.id, req.params.id)).returning();
+  if (!updated) { res.status(404).json({ error: "Usuário não encontrado" }); return; }
+  const { passwordHash: _, ...safe } = updated;
+  res.json(safe);
+});
+
 router.get("/users/:id/tasks", async (req, res) => {
   const tasks = await db
     .select()

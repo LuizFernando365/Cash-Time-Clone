@@ -1,4 +1,5 @@
 import { Switch, Route, Router as WouterRouter } from "wouter";
+import { UnreadProvider } from "@/lib/unread";
 import Splash from "@/pages/Splash";
 import Register from "@/pages/Register";
 import Login from "@/pages/Login";
@@ -14,6 +15,7 @@ import TaskCompletion from "@/pages/TaskCompletion";
 import Profile from "@/pages/Profile";
 import Ranking from "@/pages/Ranking";
 import Plans from "@/pages/Plans";
+import Checkout from "@/pages/Checkout";
 
 function Router() {
   return (
@@ -28,11 +30,12 @@ function Router() {
       <Route path="/post" component={PostTask} />
       <Route path="/messages" component={Messages} />
       <Route path="/chat/:id" component={Chat} />
-      <Route path="/task-execution" component={TaskExecution} />
-      <Route path="/task-completion" component={TaskCompletion} />
+      <Route path="/task-execution/:id" component={TaskExecution} />
+      <Route path="/task-completion/:id" component={TaskCompletion} />
       <Route path="/profile" component={Profile} />
       <Route path="/ranking" component={Ranking} />
       <Route path="/plans" component={Plans} />
+      <Route path="/checkout" component={Checkout} />
     </Switch>
   );
 }
@@ -40,11 +43,13 @@ function Router() {
 function App() {
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   return (
-    <div className="app-shell">
-      <WouterRouter base={base}>
-        <Router />
-      </WouterRouter>
-    </div>
+    <UnreadProvider>
+      <div className="app-shell">
+        <WouterRouter base={base}>
+          <Router />
+        </WouterRouter>
+      </div>
+    </UnreadProvider>
   );
 }
 

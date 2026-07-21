@@ -94,6 +94,21 @@ router.get("/conversations/:id/messages", async (req, res) => {
   res.json(msgs);
 });
 
+// Mark all messages in a conversation as read (for the given user)
+router.post("/conversations/:id/read", async (req, res) => {
+  const userId = (req.headers["x-user-id"] as string) || req.body.userId;
+  if (!userId) { res.status(401).json({ error: "userId required" }); return; }
+  await db
+    .update(messagesTable)
+    .set({ read: true })
+    .where(and(
+      eq(messagesTable.conversationId, req.params.id),
+      sql`${messagesTable.senderId} != ${userId}`,
+      eq(messagesTable.read, false)
+    ));
+  res.json({ ok: true });
+});
+
 router.post("/conversations/:id/messages", async (req, res) => {
   const { senderId, content } = req.body;
   if (!senderId || !content) { res.status(400).json({ error: "senderId and content required" }); return; }

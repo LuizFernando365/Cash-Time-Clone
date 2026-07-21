@@ -1,13 +1,12 @@
 import { useLocation } from "wouter";
+import { useUnread } from "@/lib/unread";
 
 type Tab = "home" | "map" | "add" | "chat" | "profile";
-
-interface BottomNavProps {
-  active: Tab;
-}
+interface BottomNavProps { active: Tab; }
 
 export default function BottomNav({ active }: BottomNavProps) {
   const [, navigate] = useLocation();
+  const { unreadConvs } = useUnread();
 
   return (
     <div className="bottom-nav">
@@ -35,10 +34,25 @@ export default function BottomNav({ active }: BottomNavProps) {
         </div>
       </div>
 
-      <div className={`nav-item ${active === "chat" ? "active" : ""}`} onClick={() => navigate("/messages")}>
-        <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
-          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke={active === "chat" ? "#9F67FF" : "#7E7A9A"} strokeWidth="1.8" />
-        </svg>
+      <div className={`nav-item ${active === "chat" ? "active" : ""}`} onClick={() => navigate("/messages")} style={{ position: "relative" }}>
+        <div style={{ position: "relative" }}>
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke={active === "chat" ? "#9F67FF" : "#7E7A9A"} strokeWidth="1.8" />
+          </svg>
+          {unreadConvs > 0 && (
+            <div style={{
+              position: "absolute", top: -4, right: -4,
+              background: "#7C3AED",
+              borderRadius: "50%",
+              width: 14, height: 14,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 8, fontWeight: 700, color: "white",
+              border: "1.5px solid #0D0B14",
+            }}>
+              {unreadConvs > 9 ? "9+" : unreadConvs}
+            </div>
+          )}
+        </div>
         <span className="nav-label">Chat</span>
       </div>
 
