@@ -16,6 +16,10 @@ export default function Ranking() {
 
   useEffect(() => {
     api.getRanking().then(setRanking).catch(console.error).finally(() => setLoading(false));
+    const timer = setInterval(() => {
+      api.getRanking().then(setRanking).catch(() => {});
+    }, 15000);
+    return () => clearInterval(timer);
   }, []);
 
   const myPos = ranking.findIndex((r) => r.id === user?.id);

@@ -52,6 +52,10 @@ export default function Home() {
 
   useEffect(() => {
     api.listTasks({ status: "open" }).then(setTasks).catch(console.error).finally(() => setLoading(false));
+    const timer = setInterval(() => {
+      api.listTasks({ status: "open" }).then(setTasks).catch(() => {});
+    }, 12000);
+    return () => clearInterval(timer);
   }, []);
 
   const othersOnly = tasks.filter((t) => t.creatorId !== user?.id);

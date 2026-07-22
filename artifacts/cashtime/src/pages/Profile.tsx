@@ -10,20 +10,20 @@ const LEVEL_NAMES: Record<number, string> = {
   1: "Iniciante", 2: "Aprendiz", 3: "Profissional", 4: "Expert", 5: "Mestre",
 };
 
-function levelFromTasks(n: number): number {
-  if (n >= 100) return 5;
-  if (n >= 50) return 4;
-  if (n >= 25) return 3;
-  if (n >= 10) return 2;
+function levelFromXP(xp: number): number {
+  if (xp >= 500) return 5;
+  if (xp >= 200) return 4;
+  if (xp >= 100) return 3;
+  if (xp >= 30) return 2;
   return 1;
 }
-
-function nextLevelThreshold(level: number): number {
-  if (level >= 5) return 100;
-  if (level >= 4) return 100;
-  if (level >= 3) return 50;
-  if (level >= 2) return 25;
-  return 10;
+function nextLevelXP(level: number): number {
+  const thresholds = [30, 30, 100, 200, 500, 500];
+  return thresholds[level] ?? 500;
+}
+function prevLevelXP(level: number): number {
+  const thresholds = [0, 0, 30, 100, 200, 500];
+  return thresholds[level] ?? 0;
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
@@ -82,10 +82,10 @@ export default function Profile() {
   }
 
   const myTasks = tasks.filter((t) => t.creatorId === user.id);
-  const level = levelFromTasks(user.tasksCompleted);
-  const threshold = nextLevelThreshold(level);
-  const prevThreshold = level === 1 ? 0 : nextLevelThreshold(level - 1);
-  const progress = level >= 5 ? 100 : Math.min(100, ((user.tasksCompleted - prevThreshold) / (threshold - prevThreshold)) * 100);
+  const level = levelFromXP(user.rankPoints);
+  const xpThreshold = nextLevelXP(level);
+  const xpPrev = prevLevelXP(level);
+  const progress = level >= 5 ? 100 : Math.min(100, ((user.rankPoints - xpPrev) / (xpThreshold - xpPrev)) * 100);
 
   function openEdit() {
     setEditName(user!.name);
@@ -229,14 +229,14 @@ export default function Profile() {
               🏆 Nível {level} — {LEVEL_NAMES[level] ?? "Mestre"}
             </div>
             <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>
-              {user.tasksCompleted} / {level >= 5 ? "100+" : threshold} tarefas
+              {user.rankPoints} / {level >= 5 ? "500+" : xpThreshold} XP
             </div>
           </div>
           <div className="progress-bar">
             <div className="progress-fill" style={{ width: `${progress}%` }} />
           </div>
           <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A", marginTop: 6 }}>
-            {level >= 5 ? "🏆 Nível máximo atingido!" : `Mais ${Math.max(0, threshold - user.tasksCompleted)} tarefas para o Nível ${level + 1} ✨`}
+            {level >= 5 ? "🏆 Nível máximo atingido!" : `Mais ${Math.max(0, xpThreshold - user.rankPoints)} XP para o Nível ${level + 1} ✨`}
           </div>
         </div>
 
@@ -245,7 +245,6 @@ export default function Profile() {
           <div className="stat-card">
             <div className="stat-label">Tarefas feitas</div>
             <div className="stat-val">{user.tasksCompleted}</div>
-            <div className="stat-sub">{tasks.filter(t => t.status === "done").length} concluídas</div>
           </div>
           <div className="stat-card">
             <div className="stat-label">Ganho total</div>

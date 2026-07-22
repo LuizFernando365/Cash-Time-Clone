@@ -49,6 +49,32 @@ export const api = {
   boostTask: (id: string, priority: 1 | 2) =>
     req<Task>("POST", `/tasks/${id}/boost`, { priority }),
 
+  deleteTask: (id: string) => req<{ ok: boolean }>("DELETE", `/tasks/${id}`),
+
+  editTask: (id: string, data: { title?: string; description?: string; price?: number; location?: string; estimatedTime?: string }) =>
+    req<Task>("PATCH", `/tasks/${id}`, data),
+
+  acceptTask: (id: string, executorId: string) =>
+    req<Task>("PATCH", `/tasks/${id}`, { executorId, status: "in_progress" }),
+
+  completeTask: (id: string) =>
+    req<Task>("PATCH", `/tasks/${id}`, { status: "awaiting_confirmation" }),
+
+  confirmTask: (id: string) =>
+    req<Task>("PATCH", `/tasks/${id}`, { status: "done" }),
+
+  applyToTask: (id: string, message?: string) =>
+    req<TaskApplication>("POST", `/tasks/${id}/apply`, { message }),
+
+  getTaskApplications: (id: string) =>
+    req<TaskApplicationWithUser[]>("GET", `/tasks/${id}/applications`),
+
+  getMyApplication: (taskId: string) =>
+    req<TaskApplication | null>("GET", `/tasks/${taskId}/my-application`),
+
+  approveApplication: (taskId: string, appId: string) =>
+    req<Task>("POST", `/tasks/${taskId}/applications/${appId}/approve`, {}),
+
   listConversations: () => req<ConversationWithUser[]>("GET", "/conversations"),
 
   createConversation: (otherUserId: string, taskId?: string) =>
@@ -71,22 +97,14 @@ export const api = {
   markConvRead: (convId: string) =>
     req<{ ok: boolean }>("POST", `/conversations/${convId}/read`),
 
-  deleteTask: (id: string) => req<{ ok: boolean }>("DELETE", `/tasks/${id}`),
-
-  editTask: (id: string, data: { title?: string; description?: string; price?: number; location?: string; estimatedTime?: string }) =>
-    req<Task>("PATCH", `/tasks/${id}`, data),
-
-  acceptTask: (id: string, executorId: string) =>
-    req<Task>("PATCH", `/tasks/${id}`, { executorId, status: "in_progress" }),
-
-  completeTask: (id: string) =>
-    req<Task>("PATCH", `/tasks/${id}`, { status: "done" }),
-
   upgradePlan: (userId: string) =>
     req<User>("POST", `/users/${userId}/plan`, { plan: "pro" }),
 
   cancelPlan: (userId: string) =>
     req<User>("POST", `/users/${userId}/plan`, { plan: "free" }),
+
+  withdrawEarnings: (userId: string, amount: number) =>
+    req<User>("POST", `/users/${userId}/withdraw`, { amount }),
 
   getRanking: () => req<RankingEntry[]>("GET", "/ranking"),
 
@@ -140,6 +158,19 @@ export interface Task {
 
 export interface TaskWithCreator extends Task {
   creator: User;
+}
+
+export interface TaskApplication {
+  id: string;
+  taskId: string;
+  applicantId: string;
+  message?: string | null;
+  status: string;
+  createdAt: string;
+}
+
+export interface TaskApplicationWithUser extends TaskApplication {
+  applicant: User;
 }
 
 export interface CreateTaskRequest {

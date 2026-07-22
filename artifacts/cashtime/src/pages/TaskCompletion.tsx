@@ -2,38 +2,72 @@ import { useState } from "react";
 import { useLocation, useParams } from "wouter";
 import { api } from "@/lib/api";
 
+type Step = "form" | "loading" | "success";
+
 export default function TaskCompletion() {
   const [, navigate] = useLocation();
   const params = useParams<{ id: string }>();
   const taskId = params.id ?? "";
-  const [completing, setCompleting] = useState(false);
-  const [done, setDone] = useState(false);
+  const [step, setStep] = useState<Step>("form");
+  const [description, setDescription] = useState("");
+  const [deliverable, setDeliverable] = useState("");
+  const [isRemote] = useState(() => {
+    // Try to infer from referrer or just default
+    return false;
+  });
 
-  async function handleComplete() {
-    if (!taskId || completing) return;
-    setCompleting(true);
+  async function handleSubmit() {
+    if (!taskId) return;
+    setStep("loading");
     try {
       await api.completeTask(taskId);
-      setDone(true);
-    } catch (e) { console.error(e); }
-    finally { setCompleting(false); }
+      setStep("success");
+    } catch {
+      setStep("form");
+    }
   }
 
-  if (done) {
+  if (step === "loading") {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100dvh", background: "var(--bg)", gap: 20 }}>
+        <div style={{ width: 56, height: 56, border: "4px solid rgba(124,58,237,.2)", borderTopColor: "#9F67FF", borderRadius: "50%", animation: "spin 0.9s linear infinite" }} />
+        <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(15px,4.5vw,18px)", fontWeight: 700, color: "#C4B5FD" }}>Enviando conclusão...</div>
+        <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A" }}>Registrando com segurança</div>
+      </div>
+    );
+  }
+
+  if (step === "success") {
     return (
       <div className="screen" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "80dvh", padding: "0 var(--hpad)", gap: 16, textAlign: "center" }}>
-        <div style={{ fontSize: 60, animation: "fadeInUp 0.4s ease" }}>🎉</div>
-        <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(20px,6vw,26px)", fontWeight: 800, color: "#34D399", animation: "fadeInUp 0.5s ease" }}>Tarefa concluída!</div>
-        <div style={{ fontSize: "clamp(13px,3.5vw,15px)", color: "#C4B5FD", lineHeight: 1.5, animation: "fadeInUp 0.6s ease" }}>
-          Parabéns! O pagamento será liberado após a confirmação do contratante.
+        <div style={{ fontSize: 60, animation: "fadeInUp 0.4s ease" }}>📬</div>
+        <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(20px,6vw,26px)", fontWeight: 800, color: "#C4B5FD", animation: "fadeInUp 0.5s ease" }}>
+          Conclusão enviada!
         </div>
-        <div style={{ background: "rgba(52,211,153,.07)", border: "1px solid rgba(52,211,153,.2)", borderRadius: 14, padding: "14px 20px", animation: "fadeInUp 0.7s ease", marginTop: 4 }}>
-          <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#6EE7B7", fontWeight: 600, marginBottom: 4 }}>💰 Pagamento pendente</div>
-          <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#7E7A9A" }}>Aguardando confirmação do contratante</div>
+        <div style={{ fontSize: "clamp(13px,3.5vw,15px)", color: "#7E7A9A", lineHeight: 1.6, animation: "fadeInUp 0.6s ease" }}>
+          O contratante recebeu sua conclusão e precisa confirmá-la para liberar o pagamento.
         </div>
-        <button className="btn btn-primary" style={{ marginTop: 8, maxWidth: 280 }} onClick={() => navigate("/home")}>
-          Voltar ao início →
-        </button>
+        <div style={{ background: "rgba(124,58,237,.08)", border: "1px solid rgba(124,58,237,.25)", borderRadius: 16, padding: "16px 20px", animation: "fadeInUp 0.7s ease", marginTop: 4, width: "100%" }}>
+          <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#A78BFA", fontWeight: 600, marginBottom: 8 }}>O que acontece agora?</div>
+          {[
+            "O contratante revisará seu trabalho",
+            "Se aprovado, o pagamento é liberado automaticamente",
+            "Em caso de ajustes, vocês combinam pelo chat",
+          ].map((item, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginTop: 8 }}>
+              <div style={{ width: 18, height: 18, background: "rgba(167,139,250,.2)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 10, color: "#A78BFA", fontWeight: 700 }}>{i + 1}</div>
+              <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#C4B5FD", lineHeight: 1.4, textAlign: "left" }}>{item}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%", marginTop: 8, animation: "fadeInUp 0.8s ease" }}>
+          <button className="btn btn-primary" onClick={() => navigate(`/task/${taskId}`)}>
+            Ver status da tarefa
+          </button>
+          <button className="btn btn-ghost" onClick={() => navigate("/home")}>
+            Voltar ao início
+          </button>
+        </div>
       </div>
     );
   }
@@ -41,57 +75,78 @@ export default function TaskCompletion() {
   return (
     <div className="screen" style={{ paddingBottom: 30 }}>
       <div style={{ padding: "16px var(--hpad) 8px", display: "flex", alignItems: "center", gap: 10 }}>
-        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" onClick={() => navigate(-1 as never)} style={{ cursor: "pointer" }}>
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" onClick={() => navigate(`/task-execution/${taskId}`)} style={{ cursor: "pointer" }}>
           <path d="M19 12H5M12 5l-7 7 7 7" stroke="#7E7A9A" strokeWidth="2" strokeLinecap="round" />
         </svg>
-      </div>
-
-      <div style={{ padding: "0 var(--hpad) 12px" }}>
-        <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#34D399", fontWeight: 600, marginBottom: 4 }}>✅ QUASE LÁ</div>
-        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(16px,4.5vw,20px)", fontWeight: 700 }}>Confirmar conclusão</div>
-      </div>
-
-      <div style={{ margin: "0 var(--hpad) 12px", height: "clamp(130px,38vw,170px)", background: "var(--card)", border: "1px solid rgba(52,211,153,.3)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(52,211,153,.08),rgba(124,58,237,.08))" }} />
-        <div style={{ textAlign: "center", zIndex: 1 }}>
-          <div style={{ fontSize: "clamp(32px,10vw,44px)", marginBottom: 6 }}>📸</div>
-          <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#6EE7B7", fontWeight: 500 }}>Foto de início registrada</div>
-          <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>{new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })} · Local da tarefa</div>
-        </div>
-        <div style={{ position: "absolute", top: 10, right: 10 }}>
-          <span className="pill pill-green" style={{ fontSize: 10 }}>✓ Verificada</span>
+        <div>
+          <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#34D399", fontWeight: 600 }}>ETAPA FINAL</div>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(14px,4vw,17px)", fontWeight: 700 }}>Enviar para revisão</div>
         </div>
       </div>
 
-      <div style={{ padding: "4px var(--hpad) 12px" }}>
-        <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#C4B5FD", lineHeight: 1.5 }}>
-          Serviço realizado? Tire a foto de conclusão para liberar seu pagamento.
+      <div style={{ margin: "0 var(--hpad) 16px", background: "rgba(52,211,153,.06)", border: "1px solid rgba(52,211,153,.2)", borderRadius: 16, padding: "clamp(14px,4vw,18px)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+          <div style={{ fontSize: 28 }}>🛡️</div>
+          <div>
+            <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(13px,3.5vw,15px)", fontWeight: 700, color: "#34D399" }}>Entrega protegida</div>
+            <div style={{ fontSize: "clamp(10px,2.8vw,12px)", color: "#7E7A9A" }}>O pagamento só é liberado após a confirmação do contratante</div>
+          </div>
+        </div>
+        <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#6EE7B7", lineHeight: 1.5 }}>
+          Descreva claramente o que foi realizado. Informações detalhadas evitam disputas e agilizam a aprovação.
         </div>
       </div>
 
-      <div className="photo-box" style={{ borderColor: "rgba(52,211,153,.3)" }}>
-        <svg width="48" height="48" fill="none" viewBox="0 0 24 24">
-          <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#34D399" strokeWidth="1.5" />
-          <circle cx="12" cy="13" r="4" stroke="#34D399" strokeWidth="1.5" />
-        </svg>
-        <p style={{ color: "#6EE7B7" }}>
-          Foto de conclusão do serviço<br />
-          <span style={{ color: "#7E7A9A" }}>Mostre o resultado do trabalho</span>
-        </p>
-        <button className="btn btn-green" style={{ padding: "11px 24px", width: "auto", marginTop: 4 }} onClick={handleComplete} disabled={completing}>
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="white" strokeWidth="1.8" />
-            <circle cx="12" cy="13" r="4" stroke="white" strokeWidth="1.8" />
-          </svg>
-          {completing ? "Confirmando..." : "Confirmar conclusão"}
+      <div style={{ padding: "0 var(--hpad)", display: "flex", flexDirection: "column", gap: 14 }}>
+        <div>
+          <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginBottom: 6 }}>O que foi realizado? *</div>
+          <textarea
+            className="input"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Descreva detalhadamente o serviço prestado, materiais utilizados, tempo gasto..."
+            style={{ minHeight: 100, resize: "none" }}
+          />
+        </div>
+
+        <div>
+          <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#7E7A9A", marginBottom: 6 }}>Link ou referência do entregável (opcional)</div>
+          <input
+            className="input"
+            type="text"
+            value={deliverable}
+            onChange={(e) => setDeliverable(e.target.value)}
+            placeholder="Link, arquivo, número de referência..."
+          />
+        </div>
+
+        <div style={{ background: "rgba(251,191,36,.06)", border: "1px solid rgba(251,191,36,.2)", borderRadius: 14, padding: "12px 14px" }}>
+          <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#FCD34D", fontWeight: 600, marginBottom: 6 }}>⚠️ Antes de enviar</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {[
+              "O trabalho foi concluído conforme os requisitos",
+              "Revisei a descrição da tarefa antes de enviar",
+              "Estou disponível para esclarecimentos pelo chat",
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                <div style={{ width: 14, height: 14, border: "1.5px solid #FBBF24", borderRadius: 3, flexShrink: 0, marginTop: 2, background: "rgba(251,191,36,.15)" }} />
+                <div style={{ fontSize: "clamp(11px,3vw,12px)", color: "#7E7A9A", lineHeight: 1.4 }}>{item}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <button
+          className="btn btn-green"
+          onClick={handleSubmit}
+          disabled={!description.trim()}
+          style={{ opacity: !description.trim() ? 0.5 : 1 }}
+        >
+          📤 Enviar conclusão para revisão
         </button>
-      </div>
-
-      <div style={{ margin: "0 var(--hpad)", background: "rgba(52,211,153,.07)", border: "1px solid rgba(52,211,153,.2)", borderRadius: 16, padding: "clamp(12px,3.5vw,15px)" }}>
-        <div style={{ fontSize: "clamp(11px,3vw,13px)", color: "#6EE7B7", fontWeight: 600, marginBottom: 6 }}>💰 Pagamento pendente</div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ fontSize: "clamp(12px,3.3vw,14px)", color: "#C4B5FD" }}>Será liberado após a confirmação</div>
-        </div>
+        <button className="btn btn-ghost" onClick={() => navigate(`/task-execution/${taskId}`)}>
+          Voltar à execução
+        </button>
       </div>
     </div>
   );

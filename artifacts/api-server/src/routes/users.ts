@@ -4,20 +4,9 @@ import { eq, or, desc, gt } from "drizzle-orm";
 
 const router = Router();
 
-function levelFromTasks(n: number): number {
-  if (n >= 100) return 5;
-  if (n >= 50) return 4;
-  if (n >= 25) return 3;
-  if (n >= 10) return 2;
-  return 1;
-}
-
 router.get("/users/:id", async (req, res) => {
   const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.params.id)).limit(1);
-  if (!user) {
-    res.status(404).json({ error: "Usuário não encontrado" });
-    return;
-  }
+  if (!user) { res.status(404).json({ error: "Usuário não encontrado" }); return; }
   const { passwordHash: _, ...safe } = user;
   res.json(safe);
 });
@@ -37,17 +26,8 @@ router.put("/users/:id", async (req, res) => {
     return;
   }
 
-  const [updated] = await db
-    .update(usersTable)
-    .set(updates)
-    .where(eq(usersTable.id, req.params.id))
-    .returning();
-
-  if (!updated) {
-    res.status(404).json({ error: "Usuário não encontrado" });
-    return;
-  }
-
+  const [updated] = await db.update(usersTable).set(updates).where(eq(usersTable.id, req.params.id)).returning();
+  if (!updated) { res.status(404).json({ error: "Usuário não encontrado" }); return; }
   const { passwordHash: _, ...safe } = updated;
   res.json(safe);
 });
@@ -56,6 +36,23 @@ router.post("/users/:id/plan", async (req, res) => {
   const { plan } = req.body as { plan: string };
   if (!["free", "pro"].includes(plan)) { res.status(400).json({ error: "Plano inválido" }); return; }
   const [updated] = await db.update(usersTable).set({ plan }).where(eq(usersTable.id, req.params.id)).returning();
+  if (!updated) { res.status(404).json({ error: "Usuário não encontrado" }); return; }
+  const { passwordHash: _, ...safe } = updated;
+  res.json(safe);
+});
+
+router.post("/users/:id/withdraw", async (req, res) => {
+  const { amount } = req.body as { amount: number };
+  if (!amount || amount <= 0) { res.status(400).json({ error: "Valor inválido para saque" }); return; }
+
+  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.params.id)).limit(1);
+  if (!user) { res.status(404).json({ error: "Usuário não encontrado" }); return; }
+  if ((user.totalEarned ?? 0) < amount) { res.status(400).json({ error: "Saldo insuficiente" }); return; }
+
+  const [updated] = await db.update(usersTable)
+    .set({ totalEarned: (user.totalEarned ?? 0) - amount })
+    .where(eq(usersTable.id, req.params.id))
+    .returning();
   if (!updated) { res.status(404).json({ error: "Usuário não encontrado" }); return; }
   const { passwordHash: _, ...safe } = updated;
   res.json(safe);
@@ -71,7 +68,6 @@ router.get("/users/:id/tasks", async (req, res) => {
 });
 
 router.get("/ranking", async (req, res) => {
-  // Only include users who have real activity (completed at least 1 task)
   const users = await db
     .select({
       id: usersTable.id,
@@ -85,7 +81,7 @@ router.get("/ranking", async (req, res) => {
       totalEarned: usersTable.totalEarned,
     })
     .from(usersTable)
-    .where(gt(usersTable.tasksCompleted, 0))
+    .where(gt(usersTable.rankPoints, 0))
     .orderBy(desc(usersTable.rankPoints));
   res.json(users);
 });

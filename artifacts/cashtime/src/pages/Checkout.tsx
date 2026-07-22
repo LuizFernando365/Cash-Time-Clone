@@ -102,7 +102,7 @@ export default function Checkout() {
   return (
     <div className="screen" style={{ paddingBottom: 40 }}>
       <div style={{ padding: "16px var(--hpad) 12px", display: "flex", alignItems: "center", gap: 12 }}>
-        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" onClick={() => navigate(-1 as never)} style={{ cursor: "pointer" }}>
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" onClick={() => navigate("/plans")} style={{ cursor: "pointer" }}>
           <path d="M19 12H5M12 5l-7 7 7 7" stroke="#7E7A9A" strokeWidth="2" strokeLinecap="round" />
         </svg>
         <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(15px,4.5vw,18px)", fontWeight: 700 }}>Checkout seguro</div>
